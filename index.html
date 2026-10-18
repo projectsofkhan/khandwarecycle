@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Khandwa Recycles — Khandwa Index</title>
+  <title>Khandwa Recycles</title>
   <meta name="description" content="An independent project mapping how much waste each area of Khandwa generates, and how much of it is recovered." />
   <meta name="theme-color" content="#ffffff" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,76 +16,62 @@
 
 <header class="topbar" id="topbar">
   <div class="topbar-inner">
-    <a href="#overview" class="brand">
-      <span class="brand-mark">KR</span>
-      <span class="brand-text">Khandwa Recycles</span>
-    </a>
+    <a href="#overview" class="brand-text">Khandwa Recycles</a>
     <nav class="topnav" aria-label="Sections">
       <a href="#overview" class="topnav-link active" data-section="overview">Overview</a>
       <a href="#areas" class="topnav-link" data-section="areas">Areas</a>
-      <a href="#index" class="topnav-link" data-section="index">Index</a>
       <a href="#map" class="topnav-link" data-section="map">Map</a>
       <a href="#gallery" class="topnav-link" data-section="gallery">Gallery</a>
       <a href="#about" class="topnav-link" data-section="about">About</a>
     </nav>
-    <div class="topbar-right">
-      <span class="topbar-index">Khandwa = 100</span>
-    </div>
   </div>
 </header>
 
 <main class="main">
 
-  <!-- HERO -->
   <section class="hero" id="overview">
     <div class="hero-bg-grid" aria-hidden="true"></div>
     <div class="hero-inner">
       <p class="eyebrow reveal">Independent civic data project</p>
-      <h1 class="hero-title reveal">Khandwa<br/>Recycles</h1>
+      <h1 class="hero-title reveal">Khandwa Recycles</h1>
       <p class="hero-sub reveal">See what your area throws away — and how much of it actually gets recycled.</p>
       <div class="hero-actions reveal">
         <a href="#areas" class="btn btn-primary">Choose your area</a>
-        <a href="#index" class="btn btn-ghost">See the index</a>
+        <a href="#map" class="btn btn-ghost">Open the map</a>
       </div>
-      <div class="hero-index-card reveal">
-        <div class="hero-index-number" id="hero-index-number">0</div>
-        <div class="hero-index-body">
-          <strong>Khandwa Index</strong>
-          <span>The eight-area average is set to 100. Every area on this site is scored against it.</span>
+
+      <div class="score-card reveal">
+        <div class="score-left">
+          <span class="score-label">Swachh Survekshan 2024–25</span>
+          <span class="score-value">9,766<span class="score-unit">/ 12,500</span></span>
+          <span class="score-note">Official total score. National rank 55 of 824 cities.</span>
+        </div>
+        <div class="score-divider"></div>
+        <div class="score-right">
+          <span class="score-label">Source segregation</span>
+          <span class="score-value score-value-sm">45<span class="score-unit">%</span></span>
+          <span class="score-note">Segregation parameter score. 55% of marks were cut in this category.</span>
         </div>
       </div>
+
+      <div class="city-strip reveal" id="city-strip"></div>
     </div>
-    <div class="city-strip reveal" id="city-strip"></div>
   </section>
 
-  <!-- AREAS -->
   <section class="section" id="areas">
     <div class="section-head reveal">
-      <span class="section-kicker">Eight areas</span>
+      <span class="section-kicker">Eight areas · best to worst</span>
       <h2>Choose your area</h2>
-      <p>Tap any card to open its full profile, its images, and three things it can improve.</p>
+      <p>Sorted by recycling access, highest first. Tap any card to open its profile, images, and three actions.</p>
     </div>
     <div class="area-grid" id="area-grid"></div>
   </section>
 
-  <!-- INDEX -->
-  <section class="section" id="index">
-    <div class="section-head reveal">
-      <span class="section-kicker">Comparison</span>
-      <h2>Khandwa Index</h2>
-      <p>The eight-area average is 100. Above 100 means better than average for that metric. For plastic, below 100 is better.</p>
-    </div>
-    <div class="index-table-wrap reveal">
-      <div class="index-table" id="index-table"></div>
-    </div>
-  </section>
-
-  <!-- MAP -->
   <section class="section" id="map">
     <div class="section-head reveal">
       <span class="section-kicker">Geography</span>
       <h2>The eight zones on the map</h2>
-      <p>Colour shows recycling access. Click any zone to open it.</p>
+      <p>Every area is labelled by name. Colour shows recycling access. Click any zone to open it.</p>
     </div>
     <div class="map-frame reveal">
       <div id="map" role="application" aria-label="Interactive map of Khandwa zones"></div>
@@ -99,18 +85,16 @@
     <p class="data-note reveal">Illustrative recycling access zones for demonstration — city-level figures are official.</p>
   </section>
 
-  <!-- GALLERY -->
   <section class="section" id="gallery">
     <div class="section-head reveal">
       <span class="section-kicker">Photographs</span>
       <h2>Khandwa, in pictures</h2>
-      <p>Representative images of Khandwa district, not surveys of specific zones. Tap any photograph to open it larger.</p>
+      <p>Thirty real photographs of Khandwa district. Tap any image to open it larger.</p>
     </div>
     <div class="gallery-grid" id="gallery-grid"></div>
-    <p class="gallery-note reveal">Photos from Wikimedia Commons under CC BY-SA. To add your own photos, add them to <code>image_pool</code> in <code>data.json</code> and link the new IDs inside each zone’s <code>image_ids</code> array.</p>
+    <p class="gallery-note reveal">Photos from Wikimedia Commons under CC BY-SA. To add your own, add them to <code>image_pool</code> in <code>data.json</code> and link the new IDs inside each zone’s <code>image_ids</code> array.</p>
   </section>
 
-  <!-- ABOUT -->
   <section class="section" id="about">
     <div class="section-head reveal">
       <span class="section-kicker">About</span>
@@ -134,7 +118,6 @@
   </footer>
 </main>
 
-<!-- DETAIL OVERLAY -->
 <div class="overlay" id="overlay" hidden>
   <div class="overlay-backdrop" id="overlay-backdrop"></div>
   <div class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="overlay-title">
@@ -143,7 +126,6 @@
   </div>
 </div>
 
-<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" hidden>
   <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
   <figure class="lightbox-figure">

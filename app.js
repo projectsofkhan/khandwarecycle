@@ -1,6 +1,11 @@
 (async function () {
   'use strict';
 
+  /* ---------- Global error banner ---------- */
+  window.addEventListener('error', (e) => {
+    console.error('[Khandwa Recycles] Runtime error:', e.error || e.message);
+  });
+
   let cityData, geojson, zonesById, imagePoolById;
 
   try {
@@ -51,84 +56,99 @@
     return { value, label: '—', sentiment: 'mid' };
   }
 
-  /* ---------- Tips: 2 per metric per state, pick 5 lowest-priority ---------- */
+  /* ---------- Tips library (keys are bad / mid / good, matching metricInfo's sentiment) ---------- */
   const TIPS = {
     recycle: {
-      low: [
+      bad: [
         { title: 'Separate your dry waste', body: 'Recycling access here is well below the Khandwa average. Keep bottles, paper, and metal separate from wet waste, and hand dry waste directly to a kabadiwala — most pay by weight, and it takes ten minutes a week.' },
         { title: 'Find your nearest kabadiwala', body: 'Informal scrap dealers recover far more than the formal system does in this area. Know who yours is, what they pay for, and how often they pass. A single WhatsApp message establishes a route.' }
       ],
-      mod: [
+      mid: [
         { title: 'Ask the ward office about dry-waste collection', body: 'Recycling access here is near the Khandwa average. If your collection vehicle does not take dry waste separately, ask why. Informal scrap networks pick up more than the formal system in this area.' },
         { title: 'Wash before you hand over', body: 'Contaminated bottles and containers get rejected by recyclers. Rinsing a bottle takes five seconds and roughly doubles its recovery rate.' }
       ],
-      high: [
+      good: [
         { title: 'Keep the system working', body: 'This area recycles above the Khandwa average. Support your local kabadiwala and encourage neighbours to segregate — the gap between here and weaker zones is mostly habit.' },
         { title: 'Share your method', body: 'Whatever your household does that works, teach it to one neighbour. Word of mouth is faster than any municipal campaign.' }
       ]
     },
     greenery: {
-      low: [
+      bad: [
         { title: 'Plant one tree per household', body: 'Greenery here is far below average. Neem, peepal, and gulmohar need little water and give shade within three years. One tree per household would change your street within a decade.' },
         { title: 'Give saplings instead of gifts', body: 'At weddings, births, and ceremonies, gift a sapling in a painted pot. It costs less than a decorative item, lasts decades, and becomes a small landmark in your family’s story.' }
       ],
-      mod: [
+      mid: [
         { title: 'Plant along your lane', body: 'Greenery here sits near the Khandwa average. Plant along your lane, in your society compound, or on your terrace. Ask your ward councillor to plant on unused plots.' },
         { title: 'Terrace and balcony greening', body: 'Even small flats can grow tulsi, curry leaf, chillies, and small flowering plants. Terrace shade reduces household temperatures by two to three degrees in summer.' }
       ],
-      high: [
+      good: [
         { title: 'Protect what exists', body: 'This area is greener than most of Khandwa. If you see a tree being cut without permission, report it — trees take decades to replace, and inspections are quick.' },
         { title: 'Water the young ones', body: 'Newly planted saplings die from neglect far more often than drought. If your society plants, offer to water for the first two summers.' }
       ]
     },
     plastic: {
-      low: [
+      bad: [
         { title: 'Refuse single-use plastic', body: 'Plastic makes up an unusually large share of waste here. Refuse single-use bags at shops — carry a cloth bag. Buy loose grains instead of sachets, and wash bottles before handing them to scrap dealers.' },
         { title: 'Carry a cloth bag', body: 'A folded cloth bag in your pocket or purse costs nothing and eliminates hundreds of plastic bags a year per household.' }
       ],
-      mod: [
+      mid: [
         { title: 'Buy loose, not packaged', body: 'Plastic share here is slightly above average. Buying dal, rice, and spices loose saves the sachet and often costs less per kilogram too.' },
         { title: 'Reuse before discarding', body: 'Plastic containers reused for storage, tiffins, or plant pots stay out of the waste stream for years. Wash and reuse before you throw.' }
       ],
-      high: [
+      good: [
         { title: 'Plastic is already low here', body: 'Plastic share here is below the Khandwa average. Keep it that way — small habits compound over years.' },
         { title: 'Avoid the hidden plastics', body: 'The plastic in a household budget is rarely the bag. It is the packaging, the sachet, the wrapper, the straw. Notice one today.' }
       ]
     },
     cleanliness: {
-      low: [
+      bad: [
         { title: 'Put your bins out', body: 'Cleanliness scores are well below average here. Keep wet and dry bins separate, put them out on collection days, and do not dump on empty plots or in drains — that clogs the system and creates disease vectors.' },
         { title: 'Report missed collection', body: 'If your collection vehicle skips your lane, report it to the ward office. Repeated misses are often a route problem, not a habit problem.' }
       ],
-      mod: [
+      mid: [
         { title: 'Stop the empty-plot dump', body: 'Cleanliness here is near the Khandwa average. The single biggest thing you can do is stop using empty plots or road edges as dumps — those become permanent the moment they start.' },
         { title: 'Clean your frontage', body: 'Ten minutes sweeping the strip outside your gate every morning is the cheapest civic act available, and it is contagious.' }
       ],
-      high: [
+      good: [
         { title: 'Set the example', body: 'Cleanliness here is above average. Encourage neighbours who slip. Cleanliness in this city is contagious in both directions.' },
         { title: 'Adopt a public spot', body: 'A park corner, a bus stop, a wall. Ten minutes a week keeping it clean communicates more than any poster.' }
       ]
     }
   };
 
-  function tipsFor(zone) {
-    const metrics = ['recycle', 'greenery', 'plastic', 'cleanliness'];
-    const sorted = metrics
-      .map(m => {
-        const s = metricInfo(zone, m).sentiment;
-        return { metric: m, state: s, weight: s === 'bad' ? 0 : s === 'mid' ? 1 : 2 };
-      })
-      .sort((a, b) => a.weight - b.weight);
+  const FALLBACK_TIPS = [
+    { title: 'Separate your waste', body: 'Keep wet and dry waste in separate bins.' },
+    { title: 'Compost at home', body: 'A small compost bin turns kitchen waste into soil within weeks.' },
+    { title: 'Support local recyclers', body: 'Sell dry waste to a kabadiwala instead of discarding it.' },
+    { title: 'Reduce single-use plastic', body: 'Carry a cloth bag and refuse plastic cutlery.' },
+    { title: 'Keep your frontage clean', body: 'Sweep the strip outside your home every morning.' }
+  ];
 
-    const result = [];
-    for (const item of sorted) {
-      for (const tip of TIPS[item.metric][item.state]) {
-        if (result.length < 5) result.push(tip);
-        else break;
+  function tipsFor(zone) {
+    try {
+      const metrics = ['recycle', 'greenery', 'plastic', 'cleanliness'];
+      const sorted = metrics
+        .map(m => {
+          const s = metricInfo(zone, m).sentiment;
+          return { metric: m, state: s, weight: s === 'bad' ? 0 : s === 'mid' ? 1 : 2 };
+        })
+        .sort((a, b) => a.weight - b.weight);
+
+      const result = [];
+      for (const item of sorted) {
+        const bucket = TIPS[item.metric] && TIPS[item.metric][item.state];
+        if (!Array.isArray(bucket)) continue;
+        for (const tip of bucket) {
+          if (result.length < 5) result.push(tip);
+          else break;
+        }
+        if (result.length >= 5) break;
       }
-      if (result.length >= 5) break;
+      return result.length ? result.slice(0, 5) : FALLBACK_TIPS;
+    } catch (err) {
+      console.error('[Khandwa Recycles] tipsFor failed:', err);
+      return FALLBACK_TIPS;
     }
-    return result.slice(0, 5);
   }
 
   /* ---------- City strip ---------- */
@@ -256,25 +276,46 @@
   const overlayClose = document.getElementById('overlay-close');
   const overlayBackdrop = document.getElementById('overlay-backdrop');
 
+  let overlayOpen = false;
+
   function openZone(id, cardEl) {
     const zone = zonesById[id];
-    if (!zone) return;
+    if (!zone) {
+      console.warn('[Khandwa Recycles] Unknown zone id:', id);
+      return;
+    }
 
     if (cardEl) {
       cardEl.classList.add('expanding');
       setTimeout(() => {
         cardEl.classList.remove('expanding');
         actuallyOpenZone(zone);
-      }, 320);
+      }, 220);
     } else {
       actuallyOpenZone(zone);
     }
   }
 
   function actuallyOpenZone(zone) {
-    overlayContent.innerHTML = renderZoneOverlay(zone);
+    let html = '';
+    try {
+      html = renderZoneOverlay(zone);
+    } catch (err) {
+      console.error('[Khandwa Recycles] renderZoneOverlay failed:', err);
+      html = `
+        <div style="padding:48px 44px;">
+          <h2 style="font-family:var(--display);font-size:32px;margin:0 0 12px;">${zone.name}</h2>
+          <p style="color:#991b1b;font-size:14px;line-height:1.6;">This profile failed to render. Error: <code>${String(err && err.message || err)}</code></p>
+          <p style="color:#666;font-size:13px;line-height:1.6;margin-top:16px;">Open the browser console for details.</p>
+        </div>
+      `;
+    }
+    overlayContent.innerHTML = html;
+
     overlay.hidden = false;
     document.body.style.overflow = 'hidden';
+    overlayOpen = true;
+
     requestAnimationFrame(() => overlay.classList.add('open'));
     history.replaceState(null, '', '#' + zone.id);
   }
@@ -282,28 +323,36 @@
   function closeOverlay() {
     overlay.classList.remove('open');
     document.body.style.overflow = '';
+    overlayOpen = false;
     setTimeout(() => { overlay.hidden = true; }, 440);
-    history.replaceState(null, '', window.location.pathname + window.location.search);
+    if (window.location.hash) {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
   }
 
   overlayClose.addEventListener('click', closeOverlay);
   overlayBackdrop.addEventListener('click', closeOverlay);
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !overlay.hidden) closeOverlay();
+    if (e.key === 'Escape' && overlayOpen) closeOverlay();
   });
 
-  document.querySelectorAll('.area-card').forEach(card => {
-    card.addEventListener('click', (e) => {
+  /* ---------- Card click delegation ---------- */
+  document.addEventListener('click', (e) => {
+    const card = e.target.closest('.area-card');
+    if (card && !e.target.closest('.overlay')) {
       e.preventDefault();
       openZone(card.dataset.zone, card);
-    });
+    }
   });
 
+  /* ---------- Deep link ---------- */
   if (window.location.hash) {
     const id = window.location.hash.slice(1);
     if (zonesById[id]) setTimeout(() => openZone(id), 300);
   }
 
+  /* ---------- Render overlay content ---------- */
   function renderZoneOverlay(zone) {
     const hero = imagePoolById[zone.image_ids[0]];
     const galleryImgs = zone.image_ids.map(id => imagePoolById[id]).filter(Boolean);
@@ -383,6 +432,7 @@
     const item = e.target.closest('[data-full]');
     if (item) {
       e.preventDefault();
+      e.stopPropagation();
       openLightbox(item.dataset.full, item.dataset.caption);
     }
   });
@@ -427,5 +477,5 @@
   updateBackTop();
   backTop.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-  console.info('[Khandwa Recycles] Ready.');
+  console.info('[Khandwa Recycles] Ready. 8 areas wired. Click any card.');
 })();

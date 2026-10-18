@@ -20,215 +20,169 @@
     return;
   }
 
-  /* ---------- Metric status helpers ---------- */
-  const BANDS = {
-    recycle:     { lowMax: 20, midMax: 30, invert: false },
-    greenery:    { lowMax: 10, midMax: 15, invert: false },
-    plastic:     { lowMax: 10, midMax: 12, invert: true },
-    cleanliness: { lowMax: 50, midMax: 65, invert: false }
+  /* ---------- Metric sentiment ---------- */
+  const SENTIMENT_HEX = {
+    bad: '#dc2626',
+    mid: '#d97706',
+    good: '#16a34a'
   };
 
-  function statusFor(metric, value) {
-    const b = BANDS[metric];
-    if (!b) return 'moderate';
-    if (b.invert) {
-      if (value <= b.lowMax) return 'higher';
-      if (value <= b.midMax) return 'moderate';
-      return 'low';
-    } else {
-      if (value < b.lowMax) return 'low';
-      if (value < b.midMax) return 'moderate';
-      return 'higher';
-    }
+  function sentimentHex(s) {
+    return SENTIMENT_HEX[s] || '#111';
   }
 
-  const STATUS_LABEL = {
-    recycle:     { low: 'Low', moderate: 'Moderate', higher: 'Higher' },
-    greenery:    { low: 'Low', moderate: 'Moderate', higher: 'Higher' },
-    plastic:     { low: 'High', moderate: 'Moderate', higher: 'Low' },
-    cleanliness: { low: 'Low', moderate: 'Moderate', higher: 'Higher' }
-  };
+  function metricInfo(zone, key) {
+    const value = zone[key + '_pct'];
 
-  const STATUS_COLOR = {
-    low: 'var(--red)',
-    moderate: 'var(--amber)',
-    higher: 'var(--green)'
-  };
-
-  const STATUS_HEX = {
-    low: '#b3231c',
-    moderate: '#b17300',
-    higher: '#126b35'
-  };
+    if (key === 'plastic') {
+      if (value <= 10) return { value, label: 'Low', sentiment: 'good' };
+      if (value <= 12) return { value, label: 'Moderate', sentiment: 'mid' };
+      return { value, label: 'High', sentiment: 'bad' };
+    }
+    if (key === 'recycle') {
+      if (value < 20) return { value, label: 'Low', sentiment: 'bad' };
+      if (value < 30) return { value, label: 'Moderate', sentiment: 'mid' };
+      return { value, label: 'Higher', sentiment: 'good' };
+    }
+    if (key === 'greenery') {
+      if (value < 10) return { value, label: 'Low', sentiment: 'bad' };
+      if (value < 15) return { value, label: 'Moderate', sentiment: 'mid' };
+      return { value, label: 'Higher', sentiment: 'good' };
+    }
+    if (key === 'cleanliness') {
+      if (value < 50) return { value, label: 'Low', sentiment: 'bad' };
+      if (value < 65) return { value, label: 'Moderate', sentiment: 'mid' };
+      return { value, label: 'Higher', sentiment: 'good' };
+    }
+    return { value, label: '—', sentiment: 'mid' };
+  }
 
   /* ---------- Tips ---------- */
   const TIP_LIBRARY = {
     recycle_low: {
       title: 'Separate your dry waste',
-      body: 'Recycling access here is well below the city average. The simplest fix is at home. Keep bottles, paper, and metal separate from wet waste, and hand the dry waste directly to a kabadiwala — most pay by weight, and the trip takes ten minutes a week.'
+      body: 'Recycling access here is well below the city average. The simplest fix starts at home. Keep bottles, paper, and metal separate from wet waste, and hand the dry waste directly to a kabadiwala — most pay by weight, and the trip takes ten minutes a week.'
     },
     recycle_mod: {
       title: 'Ask about collection',
-      body: 'Recycling access is moderate here. If your collection vehicle does not take dry waste separately, ask the ward office why. Informal scrap networks in this area pick up more than the formal system does.'
+      body: 'Recycling access here is moderate. If your collection vehicle does not take dry waste separately, ask the ward office why. Informal scrap networks in this area pick up more than the formal system does.'
     },
     recycle_high: {
       title: 'Keep the system working',
-      body: 'This zone recycles above the city average. Keep going. Support your local kabadiwala, and encourage neighbours to segregate — the gap between here and better zones is mostly habit.'
+      body: 'This area recycles above the city average. Support your local kabadiwala, and encourage neighbours to segregate — the gap between here and weaker zones is mostly habit.'
     },
-
     greenery_low: {
       title: 'Plant for shade',
-      body: 'Greenery is far below average here. Even one tree per household would change your street. Neem, peepal, and gulmohar need little water and give shade within three years. Give a sapling at weddings and ceremonies instead of a gift item.'
+      body: 'Greenery here is far below average. Even one tree per household would change your street. Neem, peepal, and gulmohar need little water and give shade within three years. Give a sapling at weddings and ceremonies instead of a gift item.'
     },
     greenery_mod: {
       title: 'Add more green',
-      body: 'Greenery sits below the city average. Plant along your lane, in your society compound, or on your terrace. Ask your ward councillor to plant on unused plots.'
+      body: 'Greenery here sits below the city average. Plant along your lane, in your society compound, or on your terrace. Ask your ward councillor to plant on unused plots.'
     },
     greenery_high: {
       title: 'Protect what exists',
       body: 'This area is greener than most of Khandwa. Protect the trees that exist. If you see a tree being cut without permission, report it — trees take decades to replace.'
     },
-
     plastic_low: {
       title: 'Refuse single-use plastic',
       body: 'Plastic makes up an unusually large share of waste here. Refuse single-use bags at shops — carry a cloth bag. Buy loose grains instead of sachets. Wash bottles before selling them to scrap dealers so they actually get recycled.'
     },
     plastic_mod: {
       title: 'Keep plastic out of the mix',
-      body: 'Plastic share is slightly above average. Small habits help — buy loose, refuse cutlery, reuse containers before discarding them.'
+      body: 'Plastic share here is slightly above average. Small habits help — buy loose, refuse cutlery, reuse containers before discarding them.'
     },
     plastic_high: {
       title: 'Plastic is already low here',
-      body: 'Plastic share is below the city average. Keep it that way — small habits compound over years.'
+      body: 'Plastic share here is below the city average. Keep it that way — small habits compound over years.'
     },
-
     cleanliness_low: {
       title: 'Put your bins out',
-      body: 'Cleanliness scores are well below average. Keep wet and dry bins separate, and put them out on collection days. Do not dump on empty plots or in drains — that clogs the system and creates disease vectors. Report missed collection to your ward office.'
+      body: 'Cleanliness scores are well below average here. Keep wet and dry bins separate, and put them out on collection days. Do not dump on empty plots or in drains — that clogs the system and creates disease vectors. Report missed collection to your ward office.'
     },
     cleanliness_mod: {
       title: 'Tighten the daily habit',
-      body: 'Cleanliness is moderate here. The single biggest thing you can do is stop using empty plots or road edges as dumps — those become permanent once started.'
+      body: 'Cleanliness here is moderate. The single biggest thing you can do is stop using empty plots or road edges as dumps — those become permanent once started.'
     },
     cleanliness_high: {
       title: 'Set the example',
-      body: 'Cleanliness is above average. Encourage neighbours who slip. Cleanliness in this city is contagious both ways.'
+      body: 'Cleanliness here is above average. Encourage neighbours who slip. Cleanliness in this city is contagious in both directions.'
     }
   };
 
-  function getTipsFor(zone) {
-    const candidates = [];
-
-    const recycleStatus = statusFor('recycle', zone.recycle_pct);
-    if (recycleStatus === 'low') candidates.push({ key: 'recycle_low', priority: 1 });
-    else if (recycleStatus === 'moderate') candidates.push({ key: 'recycle_mod', priority: 3 });
-    else candidates.push({ key: 'recycle_high', priority: 5 });
-
-    const greeneryStatus = statusFor('greenery', zone.greenery_pct);
-    if (greeneryStatus === 'low') candidates.push({ key: 'greenery_low', priority: 1 });
-    else if (greeneryStatus === 'moderate') candidates.push({ key: 'greenery_mod', priority: 3 });
-    else candidates.push({ key: 'greenery_high', priority: 5.1 });
-
-    const plasticStatus = statusFor('plastic', zone.plastic_pct);
-    if (plasticStatus === 'low') candidates.push({ key: 'plastic_low', priority: 1 });
-    else if (plasticStatus === 'moderate') candidates.push({ key: 'plastic_mod', priority: 3 });
-    else candidates.push({ key: 'plastic_high', priority: 5.2 });
-
-    const cleanlinessStatus = statusFor('cleanliness', zone.cleanliness_pct);
-    if (cleanlinessStatus === 'low') candidates.push({ key: 'cleanliness_low', priority: 1 });
-    else if (cleanlinessStatus === 'moderate') candidates.push({ key: 'cleanliness_mod', priority: 3 });
-    else candidates.push({ key: 'cleanliness_high', priority: 5.3 });
-
-    candidates.sort((a, b) => a.priority - b.priority);
-    return candidates.slice(0, 3).map(c => TIP_LIBRARY[c.key]);
+  function tipsFor(zone) {
+    const picks = [];
+    const sent = (k) => metricInfo(zone, k).sentiment;
+    const addIf = (metricKey, prefix, priority) => {
+      const s = sent(metricKey);
+      const suffix = s === 'bad' ? 'low' : s === 'mid' ? 'mod' : 'high';
+      picks.push({ key: prefix + '_' + suffix, priority });
+    };
+    addIf('recycle', 'recycle', 1);
+    addIf('greenery', 'greenery', 1.1);
+    addIf('plastic', 'plastic', 1.2);
+    addIf('cleanliness', 'cleanliness', 1.3);
+    // sort by priority, weighted by how bad the sentiment is
+    const weight = (p) => {
+      const parts = p.key.split('_');
+      const suffix = parts[parts.length - 1];
+      return p.priority * (suffix === 'low' ? 1 : suffix === 'mod' ? 2 : 3);
+    };
+    picks.sort((a, b) => weight(a) - weight(b));
+    return picks.slice(0, 3).map(p => TIP_LIBRARY[p.key]);
   }
 
-  /* ---------- Landing map ---------- */
-  const landingMap = L.map('map', {
+  /* ---------- Map ---------- */
+  const map = L.map('map', {
     scrollWheelZoom: false,
-    zoomControl: true,
-    attributionControl: true
+    zoomControl: true
   });
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: 'OpenStreetMap'
-  }).addTo(landingMap);
+  }).addTo(map);
 
-  landingMap.on('focus', () => landingMap.scrollWheelZoom.enable());
-  landingMap.on('blur',  () => landingMap.scrollWheelZoom.disable());
+  map.on('focus', () => map.scrollWheelZoom.enable());
+  map.on('blur',  () => map.scrollWheelZoom.disable());
 
-  function hexForScore(score) {
-    const s = statusFor('recycle', score);
-    return STATUS_HEX[s];
-  }
-
-  function landingStyle(feature) {
+  function styleFor(feature) {
     const zone = zonesById[feature.properties.id];
     const score = zone ? zone.recycle_pct : 0;
     return {
       color: '#ffffff',
       weight: 1.5,
       opacity: 1,
-      fillColor: hexForScore(score),
-      fillOpacity: 0.72
+      fillColor: sentimentHex(metricInfo(zone || {}, 'recycle').sentiment),
+      fillOpacity: 0.75
     };
   }
 
-  function landingHoverStyle(feature) {
-    return Object.assign({}, landingStyle(feature), {
-      weight: 2.5,
-      fillOpacity: 0.9
-    });
+  function hoverStyle(feature) {
+    return Object.assign({}, styleFor(feature), { weight: 2.5, fillOpacity: 0.95 });
   }
 
-  const landingLayer = L.geoJSON(geojson, {
-    style: landingStyle,
-    onEachFeature: (feature, layer) => {
+  const layer = L.geoJSON(geojson, {
+    style: styleFor,
+    onEachFeature: (feature, l) => {
       const zone = zonesById[feature.properties.id];
       if (!zone) return;
-
-      layer.bindTooltip(`${zone.name} · ${zone.recycle_pct}% recycling access`, {
+      l.bindTooltip(zone.name + ' · ' + zone.recycle_pct + '% recycling access', {
         sticky: true,
         direction: 'top',
         className: 'zone-tooltip',
-        offset: [0, -4]
+        offset: [0, -6]
       });
-
-      layer.on('mouseover', () => layer.setStyle(landingHoverStyle(feature)));
-      layer.on('mouseout', () => layer.setStyle(landingStyle(feature)));
-      layer.on('click', () => showDetail(feature.properties.id));
+      l.on('mouseover', () => l.setStyle(hoverStyle(feature)));
+      l.on('mouseout',  () => l.setStyle(styleFor(feature)));
+      l.on('click', () => showDetail(feature.properties.id));
     }
-  }).addTo(landingMap);
+  }).addTo(map);
 
-  landingMap.fitBounds(landingLayer.getBounds(), { padding: [32, 32] });
+  map.fitBounds(layer.getBounds(), { padding: [32, 32] });
 
   /* ---------- Views ---------- */
   const viewLanding = document.getElementById('view-landing');
   const viewDetail = document.getElementById('view-detail');
-
-  function showDetail(zoneId) {
-    const zone = zonesById[zoneId];
-    if (!zone) return;
-
-    renderDetail(zone);
-
-    viewLanding.hidden = true;
-    viewLanding.classList.add('is-hidden');
-    viewDetail.hidden = false;
-    viewDetail.classList.remove('is-hidden');
-
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }
-
-  function showLanding() {
-    viewDetail.hidden = true;
-    viewDetail.classList.add('is-hidden');
-    viewLanding.hidden = false;
-    viewLanding.classList.remove('is-hidden');
-
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }
 
   document.querySelectorAll('[data-zone]').forEach(btn => {
     btn.addEventListener('click', () => showDetail(btn.dataset.zone));
@@ -240,13 +194,42 @@
     if (e.key === 'Escape' && !viewDetail.hidden) showLanding();
   });
 
+  function showDetail(id) {
+    const zone = zonesById[id];
+    if (!zone) return;
+    renderDetail(zone);
+    viewLanding.hidden = true;
+    viewLanding.classList.add('is-hidden');
+    viewDetail.hidden = false;
+    viewDetail.classList.remove('is-hidden');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function showLanding() {
+    viewDetail.hidden = true;
+    viewDetail.classList.add('is-hidden');
+    viewLanding.hidden = false;
+    viewLanding.classList.remove('is-hidden');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
   /* ---------- Render detail ---------- */
   function renderDetail(zone) {
+    const recycle = metricInfo(zone, 'recycle');
+    document.getElementById('view-detail').style.setProperty('--zone-color', sentimentHex(recycle.sentiment));
+    document.getElementById('view-detail').style.setProperty(
+      '--zone-tint',
+      recycle.sentiment === 'bad' ? 'var(--red-tint)' :
+      recycle.sentiment === 'mid' ? 'var(--amber-tint)' : 'var(--green-tint)'
+    );
+
     document.getElementById('zone-title').textContent = zone.name;
     document.getElementById('zone-wards').textContent = 'Wards ' + zone.wards.join(', ');
+    document.getElementById('zone-status-pill').textContent =
+      recycle.label + ' recycling access';
 
     document.getElementById('zone-metrics').innerHTML = renderMetrics(zone);
-    document.getElementById('zone-compare').innerHTML = renderCompare(zone);
+    document.getElementById('zone-compare').innerHTML = renderCompare(zone, recycle);
     document.getElementById('tips-list').innerHTML = renderTips(zone);
 
     const badgeClass = zone.source === 'official' ? 'badge-official' : 'badge-estimate';
@@ -254,37 +237,36 @@
     document.getElementById('zone-source').innerHTML =
       `<span class="${badgeClass}">${badgeText}</span> — area-level recycling, greenery, plastic, and cleanliness figures are modelled from observed service patterns, not official ward data. City-level figures on the main page are official.`;
 
-    // Animate compare fills after paint
     requestAnimationFrame(() => {
       document.querySelectorAll('.compare-fill').forEach(el => {
-        const w = el.dataset.width;
-        if (w) el.style.width = w + '%';
+        if (el.dataset.width) el.style.width = el.dataset.width + '%';
       });
     });
   }
 
-  function metricCard(label, value, unit, metric) {
-    const status = statusFor(metric, value);
-    const statusText = STATUS_LABEL[metric][status];
-    return `
-      <div class="metric" data-status="${status}">
-        <p class="metric-label">${label}</p>
-        <p class="metric-value">${value}<span class="metric-unit">${unit}</span></p>
-        <p class="metric-status">${statusText}</p>
-      </div>
-    `;
-  }
-
   function renderMetrics(zone) {
-    return [
-      metricCard('Recycling access', zone.recycle_pct, '%', 'recycle'),
-      metricCard('Plastic share',    zone.plastic_pct, '%', 'plastic'),
-      metricCard('Greenery',         zone.greenery_pct, '%', 'greenery'),
-      metricCard('Cleanliness',      zone.cleanliness_pct, '%', 'cleanliness')
-    ].join('');
+    const keys = [
+      { key: 'recycle', label: 'Recycling access' },
+      { key: 'plastic', label: 'Plastic share' },
+      { key: 'greenery', label: 'Greenery' },
+      { key: 'cleanliness', label: 'Cleanliness' }
+    ];
+    return keys.map(k => {
+      const info = metricInfo(zone, k.key);
+      return `
+        <div class="metric" data-sentiment="${info.sentiment}">
+          <div class="metric-head">
+            <span class="metric-dot" aria-hidden="true"></span>
+            <span class="metric-label">${k.label}</span>
+          </div>
+          <span class="metric-value">${info.value}<span class="metric-unit">%</span></span>
+          <span class="metric-status">${info.label}</span>
+        </div>
+      `;
+    }).join('');
   }
 
-  function renderCompare(zone) {
+  function renderCompare(zone, recycle) {
     const zoneVal = zone.recycle_pct;
     const avgVal = cityAvgRecycle;
     const diff = zoneVal - avgVal;
@@ -292,26 +274,23 @@
 
     let summary;
     if (Math.abs(diff) < 0.05) {
-      summary = `${zone.name} sits exactly at the Khandwa average for recycling access across the eight zones.`;
+      summary = `${zone.name} sits exactly at the Khandwa average for recycling access across the eight areas.`;
     } else if (diff > 0) {
-      summary = `${zone.name} sits ${absDiff} points above the Khandwa average of ${avgVal.toFixed(1)}% across the eight zones.`;
+      summary = `${zone.name} sits ${absDiff} points above the Khandwa average of ${avgVal.toFixed(1)}% across the eight areas.`;
     } else {
-      summary = `${zone.name} sits ${absDiff} points below the Khandwa average of ${avgVal.toFixed(1)}% across the eight zones.`;
+      summary = `${zone.name} sits ${absDiff} points below the Khandwa average of ${avgVal.toFixed(1)}% across the eight areas.`;
     }
-
-    const zoneStatus = statusFor('recycle', zoneVal);
-    const zoneColor = STATUS_HEX[zoneStatus];
 
     return `
       <p class="compare-heading">Recycling access, compared</p>
       <div class="compare-row">
         <span class="compare-label">${zone.name}</span>
-        <div class="compare-track"><div class="compare-fill" data-width="${zoneVal}" style="background:${zoneColor};"></div></div>
+        <div class="compare-track"><div class="compare-fill" data-width="${zoneVal}" style="background:${sentimentHex(recycle.sentiment)};"></div></div>
         <span class="compare-value">${zoneVal}%</span>
       </div>
       <div class="compare-row">
         <span class="compare-label">Khandwa average</span>
-        <div class="compare-track"><div class="compare-fill" data-width="${avgVal.toFixed(1)}" style="background:#999;"></div></div>
+        <div class="compare-track"><div class="compare-fill" data-width="${avgVal.toFixed(1)}" style="background:#a3a3a3;"></div></div>
         <span class="compare-value">${avgVal.toFixed(1)}%</span>
       </div>
       <p class="compare-summary">${summary}</p>
@@ -319,8 +298,7 @@
   }
 
   function renderTips(zone) {
-    const tips = getTipsFor(zone);
-    return tips.map((tip, i) => `
+    return tipsFor(zone).map((tip, i) => `
       <li class="tip">
         <span class="tip-num">${String(i + 1).padStart(2, '0')}</span>
         <div class="tip-content">
@@ -331,12 +309,15 @@
     `).join('');
   }
 
-  /* ---------- Zone list scores: apply colour at load ---------- */
-  document.querySelectorAll('.zone-score').forEach(el => {
-    const v = parseFloat(el.dataset.score);
-    if (Number.isFinite(v)) {
-      el.dataset.status = statusFor('recycle', v);
-    }
+  /* ---------- Back to top ---------- */
+  const backTop = document.getElementById('back-to-top');
+  function updateBackTop() {
+    backTop.classList.toggle('visible', window.scrollY > 400);
+  }
+  window.addEventListener('scroll', updateBackTop, { passive: true });
+  updateBackTop();
+  backTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   console.info('[Khandwa Recycles] Ready.');

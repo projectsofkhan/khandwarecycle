@@ -92,7 +92,7 @@
       <p>Real photographs of Khandwa district. Tap any image to open it larger.</p>
     </div>
     <div class="gallery-grid" id="gallery-grid"></div>
-    <p class="gallery-note reveal">Photos from Wikimedia Commons under CC BY-SA. To add your own photos from Instagram, Google Maps, or your phone: upload to imgbb or Cloudinary, then add a new entry to <code>image_pool</code> in <code>data.json</code>.</p>
+    <p class="gallery-note reveal">Photos from Wikimedia Commons under CC BY-SA. To add your own photos, upload to imgbb or Cloudinary, then add a new entry to <code>image_pool</code> in <code>data.json</code>.</p>
   </section>
 
   <section class="section" id="about">
@@ -118,7 +118,8 @@
   </footer>
 </main>
 
-<div class="overlay" id="overlay" hidden>
+<!-- OVERLAY uses inline display:none — cannot be broken by cached CSS -->
+<div class="overlay" id="overlay" style="display: none;">
   <div class="overlay-backdrop" id="overlay-backdrop"></div>
   <div class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="overlay-title">
     <button class="overlay-close" id="overlay-close" aria-label="Close" type="button">×</button>
@@ -126,7 +127,7 @@
   </div>
 </div>
 
-<div class="lightbox" id="lightbox" hidden>
+<div class="lightbox" id="lightbox" style="display: none;">
   <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
   <figure class="lightbox-figure">
     <img id="lightbox-img" src="" alt="" />

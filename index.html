@@ -3,172 +3,148 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Khandwa Recycles</title>
+  <title>Khandwa Recycles — Khandwa Index</title>
   <meta name="description" content="An independent project mapping how much waste each area of Khandwa generates, and how much of it is recovered." />
   <meta name="theme-color" content="#ffffff" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app">
-    <main class="main">
 
-      <!-- ================= LANDING ================= -->
-      <section class="view" id="view-landing">
+<div class="shell">
 
-        <header class="hero">
-          <h1 class="site-name">Khandwa Recycles</h1>
-          <p class="tagline">See what your area throws away — and how much of it actually gets recycled.</p>
-          <div class="hero-stat">
-            <span class="hero-stat-value">20.8<span class="hero-stat-unit">%</span></span>
-            <span class="hero-stat-label">Average recycling access across the eight areas below</span>
-          </div>
-          <p class="lede">An independent project. City-level figures are official. Area-level figures are carefully modelled estimates, labelled as such.</p>
-        </header>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-mark">KR</span>
+      <span class="brand-text">Khandwa<br/>Recycles</span>
+    </div>
 
-        <figure class="hero-image reveal">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/6/62/Khandwa_Railway_Station_Footbridge%2C_Madhya_Pradesh.jpg" alt="Khandwa Railway Station footbridge" loading="eager" />
-          <figcaption>Khandwa Railway Station footbridge. Photo: Wikimedia Commons, CC BY-SA.</figcaption>
-        </figure>
+    <nav class="nav" aria-label="Sections">
+      <a href="#overview" class="nav-link active" data-section="overview">Overview</a>
+      <a href="#areas" class="nav-link" data-section="areas">Areas</a>
+      <a href="#index" class="nav-link" data-section="index">Khandwa Index</a>
+      <a href="#map" class="nav-link" data-section="map">Map</a>
+      <a href="#gallery" class="nav-link" data-section="gallery">Gallery</a>
+      <a href="#about" class="nav-link" data-section="about">About</a>
+    </nav>
 
-        <section class="section reveal" aria-labelledby="stats-title">
-          <h2 class="section-heading" id="stats-title">Khandwa, at a glance</h2>
-          <p class="section-sub">Five official numbers that describe the city. The segregation score is a weakness, not a strength.</p>
+    <div class="sidebar-foot">
+      <span class="index-key">Khandwa = 100</span>
+      <p>Every area is scored against the eight-area average, which is set to 100.</p>
+    </div>
+  </aside>
 
-          <div class="city-stats">
-            <div class="stat">
-              <span class="stat-value">55</span>
-              <span class="stat-label">Swachh Survekshan rank</span>
-              <span class="stat-source">Official</span>
-            </div>
-            <div class="stat">
-              <span class="stat-value">45<span class="stat-unit">%</span></span>
-              <span class="stat-label">Segregation parameter score</span>
-              <span class="stat-source">Official</span>
-            </div>
-            <div class="stat">
-              <span class="stat-value">5.16<span class="stat-unit">T</span></span>
-              <span class="stat-label">Plastic, per day</span>
-              <span class="stat-source">Official</span>
-            </div>
-            <div class="stat">
-              <span class="stat-value">50</span>
-              <span class="stat-label">Administrative wards</span>
-              <span class="stat-source">Official</span>
-            </div>
-            <div class="stat">
-              <span class="stat-value">2<span class="stat-unit">lakh</span></span>
-              <span class="stat-label">Population</span>
-              <span class="stat-source">Official</span>
-            </div>
-          </div>
-        </section>
+  <div class="content">
 
-        <section class="section reveal" aria-labelledby="choose-title">
-          <h2 class="section-heading" id="choose-title">Choose your area</h2>
-          <p class="section-sub">Eight areas across Khandwa. Tap one to see its numbers, how it compares, and three things it can improve.</p>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Open menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
 
-          <div class="zone-grid" id="zone-grid"></div>
-        </section>
+    <!-- OVERVIEW -->
+    <section class="section hero-section" id="overview">
+      <p class="eyebrow">Independent civic data project</p>
+      <h1 class="hero-title">Khandwa<br/>Recycles</h1>
+      <p class="hero-sub">See what your area throws away — and how much of it actually gets recycled.</p>
 
-        <section class="section reveal" aria-labelledby="compare-title">
-          <h2 class="section-heading" id="compare-title">Compare the eight areas</h2>
-          <p class="section-sub">All four metrics, side by side. The Khandwa average is the average of these eight areas, not an official city-wide figure.</p>
-
-          <div class="compare-table" id="compare-table"></div>
-        </section>
-
-        <section class="section reveal" aria-labelledby="map-title">
-          <h2 class="section-heading" id="map-title">The eight zones on the map</h2>
-          <p class="section-sub">Colour shows recycling access. Click any zone to open it.</p>
-
-          <div class="map-frame">
-            <div id="map" role="application" aria-label="Interactive map of Khandwa zones"></div>
-          </div>
-
-          <div class="map-legend" aria-label="Recycling access legend">
-            <span class="legend-title">Recycling access</span>
-            <span class="legend-item"><span class="legend-swatch legend-low"></span>Low, below 20%</span>
-            <span class="legend-item"><span class="legend-swatch legend-mid"></span>Moderate, 20 to 30%</span>
-            <span class="legend-item"><span class="legend-swatch legend-high"></span>Higher, above 30%</span>
-          </div>
-
-          <p class="data-note">Illustrative recycling access zones for demonstration — city-level figures are official.</p>
-        </section>
-
-        <section class="section qr-section reveal" aria-labelledby="qr-title">
-          <div class="qr-text">
-            <h2 class="section-heading" id="qr-title">Continue on your phone</h2>
-            <p class="section-sub">Scan to open the same map in your pocket. The same areas, the same numbers, the same caveats.</p>
-          </div>
-          <div class="qr-image">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=https%3A%2F%2Fkhandwa-recycles.vercel.app&bgcolor=ffffff&color=111111&margin=0&qzone=2" alt="QR code linking to Khandwa Recycles" width="140" height="140" loading="lazy" />
-          </div>
-        </section>
-
-      </section>
-
-      <!-- ================= DETAIL ================= -->
-      <section class="view is-hidden" id="view-detail" hidden>
-
-        <button class="back-btn" type="button" id="back-btn">All areas</button>
-
-        <header class="zone-header">
-          <div class="zone-status-pill" id="zone-status-pill"></div>
-          <h1 class="zone-title" id="zone-title"></h1>
-          <p class="zone-wards" id="zone-wards"></p>
-        </header>
-
-        <figure class="zone-image reveal" id="zone-image"></figure>
-
-        <div class="zone-metrics" id="zone-metrics"></div>
-
-        <div class="zone-compare" id="zone-compare"></div>
-
-        <section class="section tips-section reveal" aria-labelledby="tips-title">
-          <h2 class="section-heading" id="tips-title">What this area can improve</h2>
-          <p class="section-sub">Three actions, based on the numbers above.</p>
-          <ol class="tips-list" id="tips-list"></ol>
-        </section>
-
-        <p class="zone-source" id="zone-source"></p>
-
-        <div class="zone-footer-action">
-          <button class="back-btn" type="button" id="back-btn-2">Back to all areas</button>
+      <div class="hero-index">
+        <div class="hero-index-number">100</div>
+        <div class="hero-index-body">
+          <strong>Khandwa Index</strong>
+          <span>The eight-area average is set to 100. Every area on this site is scored against it.</span>
         </div>
+      </div>
 
-      </section>
+      <div class="city-strip" id="city-strip"></div>
+    </section>
 
-    </main>
+    <!-- AREAS -->
+    <section class="section" id="areas">
+      <div class="section-head">
+        <h2>Eight areas</h2>
+        <p>Tap a card to open its full profile, its images, and three things it can improve.</p>
+      </div>
+      <div class="area-grid" id="area-grid"></div>
+    </section>
 
-    <footer class="footer">
-      <h2>About this project</h2>
-      <p>Khandwa Recycles is an independent, citizen-led awareness project. It is <strong>not</strong> an official website of the Khandwa Municipal Corporation, the Government of Madhya Pradesh, or any government body, and it is <strong>not</strong> affiliated with or endorsed by them.</p>
-      <p>City-level figures are drawn from publicly available official sources, including the Swachh Survekshan 2024–25 results, municipal solid waste records, and CPCB publications.</p>
-      <p>Neighbourhood-level figures for the eight super-zones (Khanshahwali, Anand Nagar, Bengali Colony, Padam Nagar, Civil Lines, Ghaspura, Imlipura, Ganesh Talai) are <strong>illustrative estimates</strong> based on observed service patterns and local field notes. They are not official ward-level statistics and should not be treated as such.</p>
-      <p>This site is provided <strong>for information and awareness only</strong>. It is not a basis for legal, financial, commercial, or policy decisions. If you spot an error or have better local data, please reach out — the map improves when residents correct it.</p>
+    <!-- INDEX -->
+    <section class="section" id="index">
+      <div class="section-head">
+        <h2>Khandwa Index</h2>
+        <p>The eight-area average is 100. Above 100 means better than average for that metric. For plastic, below 100 is better.</p>
+      </div>
+      <div class="index-table-wrap">
+        <div class="index-table" id="index-table"></div>
+      </div>
+    </section>
 
-      <h2 class="sources-heading">Sources</h2>
-      <ul class="sources-list">
-        <li>Swachh Survekshan 2024–25 results. Rank 55 national; segregation parameter score 45%. Reported by <em>Dainik Bhaskar</em> and <em>Patrika</em>, quoting Khandwa Municipal Corporation nodal officer Sachin Sitole.</li>
-        <li>MPPCB District Environment Plans, compiled in <em>IIT Gandhinagar, Narmada Basin Infrastructure and Planning Report</em>. Plastic waste 5.16 TPD; municipal solid waste 49.2 TPD.</li>
-        <li>Census of India 2011 and Khandwa Municipal Corporation. Population 200,738; 50 administrative wards; ODF++ certified.</li>
-        <li>Madhya Pradesh eProcurement tender 2026_UAD_536287_1. 134 TPD municipal solid waste processing facility with MRF and bio-gas components.</li>
-        <li>Photographs: Wikimedia Commons, CC BY-SA. Representative images of Khandwa, not photographs of the specific zones.</li>
-      </ul>
+    <!-- MAP -->
+    <section class="section" id="map">
+      <div class="section-head">
+        <h2>The eight zones on the map</h2>
+        <p>Colour shows recycling access. Click any zone to open it.</p>
+      </div>
+      <div class="map-frame">
+        <div id="map" role="application" aria-label="Interactive map of Khandwa zones"></div>
+      </div>
+      <div class="map-legend">
+        <span class="legend-title">Recycling access</span>
+        <span class="legend-item"><span class="legend-swatch legend-low"></span>Low, below 20%</span>
+        <span class="legend-item"><span class="legend-swatch legend-mid"></span>Moderate, 20 to 30%</span>
+        <span class="legend-item"><span class="legend-swatch legend-high"></span>Higher, above 30%</span>
+      </div>
+      <p class="data-note">Illustrative recycling access zones for demonstration — city-level figures are official.</p>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="section" id="gallery">
+      <div class="section-head">
+        <h2>Gallery</h2>
+        <p>Khandwa city, in photographs. Representative images of the city, not surveys of specific zones.</p>
+      </div>
+      <div class="gallery-grid" id="gallery-grid"></div>
+      <p class="gallery-note">Photos from Wikimedia Commons under CC BY-SA. To add your own photos, drop them into the <code>image_pool</code> in <code>data.json</code> and link the new IDs inside each zone’s <code>image_ids</code> array.</p>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="section" id="about">
+      <div class="section-head">
+        <h2>About this project</h2>
+      </div>
+      <div class="about-body">
+        <p>Khandwa Recycles is an independent, citizen-led awareness project. It is <strong>not</strong> an official website of the Khandwa Municipal Corporation, the Government of Madhya Pradesh, or any government body, and it is <strong>not</strong> affiliated with or endorsed by them.</p>
+        <p>City-level figures are drawn from publicly available official sources, including the Swachh Survekshan 2024–25 results, municipal solid waste records, and CPCB publications.</p>
+        <p>Neighbourhood-level figures for the eight super-zones are <strong>illustrative estimates</strong> based on observed service patterns and local field notes. They are not official ward-level statistics and should not be treated as such.</p>
+        <p>This site is provided <strong>for information and awareness only</strong>. If you spot an error or have better local data, please reach out — the map improves when residents correct it.</p>
+
+        <h3>Sources</h3>
+        <ul class="sources" id="sources-list"></ul>
+
+        <h3>Images</h3>
+        <p>All photographs are from Wikimedia Commons, published under CC BY-SA or compatible licences. They are representative images of Khandwa, not photographs of the specific zones.</p>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span>Khandwa Recycles · Independent project · Not an official site</span>
+      <span>City figures official · Area figures estimates</span>
     </footer>
+
   </div>
+</div>
 
-  <button class="back-to-top" id="back-to-top" aria-label="Back to top" type="button">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M8 13V3M8 3L3 8M8 3L13 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
+<!-- DETAIL OVERLAY -->
+<div class="overlay" id="overlay" hidden>
+  <div class="overlay-backdrop" id="overlay-backdrop"></div>
+  <div class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="overlay-title">
+    <button class="overlay-close" id="overlay-close" aria-label="Close" type="button">×</button>
+    <div class="overlay-content" id="overlay-content"></div>
+  </div>
+</div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

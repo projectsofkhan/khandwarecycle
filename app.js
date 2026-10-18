@@ -1,6 +1,7 @@
 (async function () {
   'use strict';
 
+  /* ---------- Data ---------- */
   let cityData, geojson, zonesById, averages, imagePoolById;
 
   try {
@@ -108,6 +109,26 @@
     return picks.slice(0, 3).map(p => TIPS[p.key]);
   }
 
+  /* ---------- Hero index count-up ---------- */
+  (function countUp() {
+    const el = document.getElementById('hero-index-number');
+    if (!el) return;
+    let start = null;
+    const duration = 1600;
+    const target = 100;
+    function step(ts) {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 4);
+      el.textContent = Math.round(eased * target);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) { requestAnimationFrame(step); observer.disconnect(); }
+    }, { threshold: 0.4 });
+    observer.observe(el);
+  })();
+
   /* ---------- City strip ---------- */
   const city = cityData.city;
   document.getElementById('city-strip').innerHTML = [
@@ -142,11 +163,14 @@
         <div class="area-card-media">
           <img src="${img}" alt="${firstImage ? firstImage.caption : zone.name}" loading="lazy" />
           <span class="area-badge" data-sentiment="${info.sentiment}">${info.label}</span>
+          <span class="area-index-badge">
+            <span class="idx" style="color:${HEX[idx.sentiment]}">${idx.index}</span>
+            <span class="lbl">index</span>
+          </span>
         </div>
         <div class="area-card-body">
           <div class="area-card-top">
             <span class="area-card-name">${zone.name}</span>
-            <span class="area-card-index" style="color:${HEX[info.sentiment]}">${idx.index}</span>
           </div>
           <p class="area-card-tagline">${zone.tagline || ''}</p>
           <div class="area-mini">
@@ -182,14 +206,14 @@
       return `<tr><td>${z.name}</td>${cells}</tr>`;
     }).join('');
     const baseRow = `<tr class="row-base"><td>Khandwa average (baseline)</td>${indexMetrics.map(() => `<td>100<span class="idx-unit">idx</span></td>`).join('')}</tr>`;
-    return `<table>${head}${rows}${baseRow}</table>`;
+    return `<table><thead>${head}</thead><tbody>${rows}${baseRow}</tbody></table>`;
   }
   document.getElementById('index-table').innerHTML = buildIndexTable();
 
   /* ---------- Gallery ---------- */
   const gallery = document.getElementById('gallery-grid');
-  gallery.innerHTML = cityData.image_pool.map(img => `
-    <div class="gallery-item">
+  gallery.innerHTML = cityData.image_pool.map((img, i) => `
+    <div class="gallery-item" data-full="${img.url}" data-caption="${img.caption}">
       <img src="${img.url}" alt="${img.caption}" loading="lazy" />
       <div class="gallery-caption">${img.caption}</div>
     </div>
@@ -239,13 +263,6 @@
   const overlayClose = document.getElementById('overlay-close');
   const overlayBackdrop = document.getElementById('overlay-backdrop');
 
-  document.addEventListener('click', (e) => {
-    const card = e.target.closest('[data-zone]');
-    if (card && !e.target.closest('.overlay')) {
-      openZone(card.dataset.zone);
-    }
-  });
-
   function openZone(id) {
     const zone = zonesById[id];
     if (!zone) return;
@@ -253,12 +270,14 @@
     overlay.hidden = false;
     document.body.style.overflow = 'hidden';
     requestAnimationFrame(() => overlay.classList.add('open'));
+    history.replaceState(null, '', '#' + id);
   }
 
   function closeOverlay() {
     overlay.classList.remove('open');
     document.body.style.overflow = '';
-    setTimeout(() => { overlay.hidden = true; }, 380);
+    setTimeout(() => { overlay.hidden = true; }, 440);
+    history.replaceState(null, '', window.location.pathname + window.location.search);
   }
 
   overlayClose.addEventListener('click', closeOverlay);
@@ -266,6 +285,20 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !overlay.hidden) closeOverlay();
   });
+
+  /* Direct card listeners — guaranteed click-to-open */
+  document.querySelectorAll('.area-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      openZone(card.dataset.zone);
+    });
+  });
+
+  /* Deep-link support: #civil-lines opens directly */
+  if (window.location.hash) {
+    const id = window.location.hash.slice(1);
+    if (zonesById[id]) setTimeout(() => openZone(id), 300);
+  }
 
   function renderZoneOverlay(zone) {
     const info = metricInfo(zone, 'recycle');
@@ -283,11 +316,11 @@
     const tips = tipsFor(zone);
 
     return `
-      <div class="ov-image">
+      <div class="ov-hero">
         ${hero ? `<img src="${hero.url}" alt="${zone.name}" />` : ''}
+        <p class="ov-eyebrow">Area profile · Wards ${zone.wards.join(', ')}</p>
+        <h2 class="ov-title" id="overlay-title">${zone.name}</h2>
       </div>
-      <p class="ov-eyebrow">Area profile · Wards ${zone.wards.join(', ')}</p>
-      <h2 class="ov-title" id="overlay-title">${zone.name}</h2>
       <p class="ov-tagline">${zone.tagline || ''}</p>
       <p class="ov-notes">${zone.notes || ''}</p>
 
@@ -314,7 +347,7 @@
       </div>
 
       <div class="ov-gallery">
-        ${gallery.map(g => `<img src="${g.url}" alt="${g.caption}" loading="lazy" />`).join('')}
+        ${gallery.map(g => `<img src="${g.url}" alt="${g.caption}" loading="lazy" data-full="${g.url}" data-caption="${g.caption}" class="ov-gallery-img" />`).join('')}
       </div>
 
       <div class="ov-tips">
@@ -337,31 +370,73 @@
     `;
   }
 
-  /* ---------- Nav active + sidebar ---------- */
-  const navLinks = document.querySelectorAll('.nav-link');
+  /* ---------- Lightbox ---------- */
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxCaption = document.getElementById('lightbox-caption');
+  const lightboxClose = document.getElementById('lightbox-close');
+  const lightboxBackdrop = document.getElementById('lightbox-backdrop');
+
+  function openLightbox(src, caption) {
+    lightboxImg.src = src;
+    lightboxImg.alt = caption || '';
+    lightboxCaption.textContent = caption || '';
+    lightbox.hidden = false;
+    requestAnimationFrame(() => lightbox.classList.add('open'));
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    setTimeout(() => { lightbox.hidden = true; }, 300);
+  }
+
+  document.addEventListener('click', (e) => {
+    const item = e.target.closest('[data-full]');
+    if (item) {
+      e.preventDefault();
+      openLightbox(item.dataset.full, item.dataset.caption);
+    }
+  });
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightboxBackdrop.addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !lightbox.hidden) closeLightbox();
+  });
+
+  /* ---------- Scroll reveal ---------- */
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  /* ---------- Nav active + topbar ---------- */
+  const topbar = document.getElementById('topbar');
+  const navLinks = document.querySelectorAll('.topnav-link');
   const sections = ['overview', 'areas', 'index', 'map', 'gallery', 'about']
     .map(id => document.getElementById(id))
     .filter(Boolean);
 
+  let lastScroll = 0;
   function updateNav() {
+    const y = window.scrollY;
+    topbar.classList.toggle('scrolled', y > 8);
     let current = sections[0];
-    const y = window.scrollY + 160;
-    sections.forEach(s => { if (s.offsetTop <= y) current = s; });
+    sections.forEach(s => { if (s.offsetTop <= y + 160) current = s; });
     navLinks.forEach(a => a.classList.toggle('active', a.dataset.section === current.id));
   }
   window.addEventListener('scroll', updateNav, { passive: true });
   updateNav();
 
-  navLinks.forEach(a => {
-    a.addEventListener('click', () => {
-      document.getElementById('sidebar').classList.remove('open');
-    });
-  });
-
-  const menuToggle = document.getElementById('menu-toggle');
-  menuToggle.addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('open');
-  });
+  /* ---------- Back to top ---------- */
+  const backTop = document.getElementById('back-to-top');
+  function updateBackTop() { backTop.classList.toggle('visible', window.scrollY > 480); }
+  window.addEventListener('scroll', updateBackTop, { passive: true });
+  updateBackTop();
+  backTop.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
   console.info('[Khandwa Recycles] Ready. Khandwa Index = 100.');
 })();

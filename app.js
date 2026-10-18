@@ -1,34 +1,15 @@
-(async function () {
+(function () {
   'use strict';
 
-  /* ---------- Global error banner ---------- */
-  window.addEventListener('error', (e) => {
-    console.error('[Khandwa Recycles] Runtime error:', e.error || e.message);
-  });
+  console.log('[Khandwa Recycles] Script loaded.');
 
+  /* ---------- Global state ---------- */
   let cityData, geojson, zonesById, imagePoolById;
+  let overlay, overlayContent, overlayCloseBtn, overlayBackdrop;
+  let lightbox, lightboxImg, lightboxCaption, lightboxCloseBtn, lightboxBackdrop;
+  let map;
 
-  try {
-    const [cityRes, geoRes] = await Promise.all([
-      fetch('data.json').then(r => r.json()),
-      fetch('zones.geojson').then(r => r.json())
-    ]);
-    cityData = cityRes;
-    geojson = geoRes;
-    zonesById = Object.fromEntries(cityData.zones.map(z => [z.id, z]));
-    imagePoolById = Object.fromEntries(cityData.image_pool.map(i => [i.id, i]));
-  } catch (err) {
-    console.error('[Khandwa Recycles] Data load failed:', err);
-    document.body.insertAdjacentHTML('afterbegin', `
-      <div style="padding:16px 24px;background:#fef2f2;border-bottom:1px solid #fecaca;font-family:system-ui;font-size:14px;color:#991b1b;">
-        <strong>Data failed to load.</strong> This site uses <code>fetch()</code> which browsers block on <code>file://</code>.
-        Run it from a local server (<code>python3 -m http.server</code> or <code>npx serve</code>) or open the deployed Vercel URL.
-      </div>
-    `);
-    return;
-  }
-
-  /* ---------- Sentiment ---------- */
+  /* ---------- Helpers ---------- */
   const HEX = { bad: '#dc2626', mid: '#d97706', good: '#16a34a' };
 
   function metricInfo(zone, key) {
@@ -56,7 +37,7 @@
     return { value, label: '—', sentiment: 'mid' };
   }
 
-  /* ---------- Tips library (keys are bad / mid / good, matching metricInfo's sentiment) ---------- */
+  /* ---------- Tips library (keys = bad / mid / good) ---------- */
   const TIPS = {
     recycle: {
       bad: [
@@ -151,211 +132,10 @@
     }
   }
 
-  /* ---------- City strip ---------- */
-  const city = cityData.city;
-  document.getElementById('city-strip').innerHTML = [
-    { value: city.swachh_rank, unit: '', label: 'Swachh Survekshan rank' },
-    { value: city.segregation_score_pct, unit: '%', label: 'Segregation parameter score' },
-    { value: city.plastic_tpd, unit: 'T', label: 'Plastic, per day' },
-    { value: city.wards, unit: '', label: 'Administrative wards' },
-    { value: '2', unit: 'lakh', label: 'Population' }
-  ].map(c => `
-    <div class="city-cell">
-      <span class="city-cell-value">${c.value}<span class="city-cell-unit">${c.unit}</span></span>
-      <span class="city-cell-label">${c.label}</span>
-      <span class="city-cell-source">Official</span>
-    </div>
-  `).join('');
-
-  /* ---------- Area cards (sorted best to worst) ---------- */
-  const sortedZones = [...cityData.zones].sort((a, b) => b.recycle_pct - a.recycle_pct);
-
-  const areaGrid = document.getElementById('area-grid');
-  areaGrid.innerHTML = sortedZones.map((zone, i) => {
-    const info = metricInfo(zone, 'recycle');
-    const firstImage = imagePoolById[zone.image_ids[0]];
-    const img = firstImage ? firstImage.url : '';
-    const metrics = [
-      { label: 'Recycle', key: 'recycle_pct' },
-      { label: 'Plastic', key: 'plastic_pct' },
-      { label: 'Green', key: 'greenery_pct' },
-      { label: 'Clean', key: 'cleanliness_pct' }
-    ];
-    return `
-      <button class="area-card" type="button" data-zone="${zone.id}">
-        <div class="area-card-media">
-          <img src="${img}" alt="${firstImage ? firstImage.caption : zone.name}" loading="lazy" />
-          <span class="area-badge" data-sentiment="${info.sentiment}">${info.label}</span>
-          <span class="area-rank">
-            <span class="num" style="color:${HEX[info.sentiment]}">#${i + 1}</span>
-            <span class="lbl">of 8</span>
-          </span>
-        </div>
-        <div class="area-card-body">
-          <div class="area-card-top">
-            <span class="area-card-name">${zone.name}</span>
-          </div>
-          <p class="area-card-tagline">${zone.tagline || ''}</p>
-          <div class="area-mini">
-            ${metrics.map(m => {
-              const val = zone[m.key];
-              const mi = metricInfo(zone, m.key.replace('_pct', ''));
-              return `<div class="area-mini-cell">
-                <span class="area-mini-val" style="color:${HEX[mi.sentiment]}">${val}%</span>
-                <span class="area-mini-label">${m.label}</span>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>
-      </button>
-    `;
-  }).join('');
-
-  /* ---------- Gallery ---------- */
-  const gallery = document.getElementById('gallery-grid');
-  gallery.innerHTML = cityData.image_pool.map(img => `
-    <div class="gallery-item" data-full="${img.url}" data-caption="${img.caption}">
-      <img src="${img.url}" alt="${img.caption}" loading="lazy" />
-      <div class="gallery-caption">${img.caption}</div>
-    </div>
-  `).join('');
-
-  /* ---------- Sources ---------- */
-  document.getElementById('sources-list').innerHTML = cityData.city.sources
-    .map(s => `<li><em>${s.label}</em> — ${s.note}</li>`)
-    .join('');
-
-  /* ---------- Map ---------- */
-  const map = L.map('map', { scrollWheelZoom: false, zoomControl: true });
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19, attribution: 'OpenStreetMap'
-  }).addTo(map);
-  map.on('focus', () => map.scrollWheelZoom.enable());
-  map.on('blur', () => map.scrollWheelZoom.disable());
-
-  function styleFor(feature) {
-    const zone = zonesById[feature.properties.id];
-    if (!zone) return { color: '#fff', weight: 1, fillOpacity: 0 };
-    const info = metricInfo(zone, 'recycle');
-    return { color: '#fff', weight: 1.5, opacity: 1, fillColor: HEX[info.sentiment], fillOpacity: 0.75 };
-  }
-  function hoverStyle(feature) {
-    return Object.assign({}, styleFor(feature), { weight: 2.5, fillOpacity: 0.95 });
-  }
-
-  const layer = L.geoJSON(geojson, {
-    style: styleFor,
-    onEachFeature: (feature, l) => {
-      const zone = zonesById[feature.properties.id];
-      if (!zone) return;
-
-      const center = l.getBounds().getCenter();
-      L.marker(center, {
-        icon: L.divIcon({
-          className: 'map-label-wrapper',
-          html: `<div class="map-label">${zone.name}<span class="pct">${zone.recycle_pct}%</span></div>`,
-          iconSize: [0, 0],
-          iconAnchor: [0, 0]
-        }),
-        interactive: false
-      }).addTo(map);
-
-      l.bindTooltip(`${zone.name} · ${zone.recycle_pct}% recycling access`, {
-        sticky: true, direction: 'top', className: 'zone-tooltip', offset: [0, -6]
-      });
-      l.on('mouseover', () => l.setStyle(hoverStyle(feature)));
-      l.on('mouseout', () => l.setStyle(styleFor(feature)));
-      l.on('click', () => openZone(zone.id));
-    }
-  }).addTo(map);
-  map.fitBounds(layer.getBounds(), { padding: [40, 40] });
-
-  /* ---------- Overlay ---------- */
-  const overlay = document.getElementById('overlay');
-  const overlayContent = document.getElementById('overlay-content');
-  const overlayClose = document.getElementById('overlay-close');
-  const overlayBackdrop = document.getElementById('overlay-backdrop');
-
-  let overlayOpen = false;
-
-  function openZone(id, cardEl) {
-    const zone = zonesById[id];
-    if (!zone) {
-      console.warn('[Khandwa Recycles] Unknown zone id:', id);
-      return;
-    }
-
-    if (cardEl) {
-      cardEl.classList.add('expanding');
-      setTimeout(() => {
-        cardEl.classList.remove('expanding');
-        actuallyOpenZone(zone);
-      }, 220);
-    } else {
-      actuallyOpenZone(zone);
-    }
-  }
-
-  function actuallyOpenZone(zone) {
-    let html = '';
-    try {
-      html = renderZoneOverlay(zone);
-    } catch (err) {
-      console.error('[Khandwa Recycles] renderZoneOverlay failed:', err);
-      html = `
-        <div style="padding:48px 44px;">
-          <h2 style="font-family:var(--display);font-size:32px;margin:0 0 12px;">${zone.name}</h2>
-          <p style="color:#991b1b;font-size:14px;line-height:1.6;">This profile failed to render. Error: <code>${String(err && err.message || err)}</code></p>
-          <p style="color:#666;font-size:13px;line-height:1.6;margin-top:16px;">Open the browser console for details.</p>
-        </div>
-      `;
-    }
-    overlayContent.innerHTML = html;
-
-    overlay.hidden = false;
-    document.body.style.overflow = 'hidden';
-    overlayOpen = true;
-
-    requestAnimationFrame(() => overlay.classList.add('open'));
-    history.replaceState(null, '', '#' + zone.id);
-  }
-
-  function closeOverlay() {
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-    overlayOpen = false;
-    setTimeout(() => { overlay.hidden = true; }, 440);
-    if (window.location.hash) {
-      history.replaceState(null, '', window.location.pathname + window.location.search);
-    }
-  }
-
-  overlayClose.addEventListener('click', closeOverlay);
-  overlayBackdrop.addEventListener('click', closeOverlay);
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && overlayOpen) closeOverlay();
-  });
-
-  /* ---------- Card click delegation ---------- */
-  document.addEventListener('click', (e) => {
-    const card = e.target.closest('.area-card');
-    if (card && !e.target.closest('.overlay')) {
-      e.preventDefault();
-      openZone(card.dataset.zone, card);
-    }
-  });
-
-  /* ---------- Deep link ---------- */
-  if (window.location.hash) {
-    const id = window.location.hash.slice(1);
-    if (zonesById[id]) setTimeout(() => openZone(id), 300);
-  }
-
   /* ---------- Render overlay content ---------- */
   function renderZoneOverlay(zone) {
-    const hero = imagePoolById[zone.image_ids[0]];
-    const galleryImgs = zone.image_ids.map(id => imagePoolById[id]).filter(Boolean);
+    const hero = zone.image_ids && imagePoolById[zone.image_ids[0]];
+    const galleryImgs = (zone.image_ids || []).map(id => imagePoolById[id]).filter(Boolean);
     const metrics = [
       { key: 'recycle', label: 'Recycling access' },
       { key: 'plastic', label: 'Plastic share' },
@@ -367,7 +147,7 @@
     return `
       <div class="ov-hero">
         ${hero ? `<img src="${hero.url}" alt="${zone.name}" />` : ''}
-        <p class="ov-eyebrow">Area profile · Wards ${zone.wards.join(', ')}</p>
+        <p class="ov-eyebrow">Area profile · Wards ${(zone.wards || []).join(', ')}</p>
         <h2 class="ov-title" id="overlay-title">${zone.name}</h2>
       </div>
       <p class="ov-tagline">${zone.tagline || ''}</p>
@@ -409,73 +189,320 @@
     `;
   }
 
-  /* ---------- Lightbox ---------- */
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightbox-img');
-  const lightboxCaption = document.getElementById('lightbox-caption');
-  const lightboxClose = document.getElementById('lightbox-close');
-  const lightboxBackdrop = document.getElementById('lightbox-backdrop');
+  /* ---------- GLOBAL: open a zone ---------- */
+  window.openZone = function (id, cardEl) {
+    console.log('[Khandwa Recycles] openZone called for:', id, '| element:', !!cardEl);
+    const zone = zonesById && zonesById[id];
+    if (!zone) {
+      console.error('[Khandwa Recycles] Unknown zone id:', id);
+      return;
+    }
 
-  function openLightbox(src, caption) {
+    const doOpen = function () {
+      let html = '';
+      try {
+        html = renderZoneOverlay(zone);
+      } catch (err) {
+        console.error('[Khandwa Recycles] renderZoneOverlay failed:', err);
+        html = `<div style="padding:56px 44px;">
+          <h2 style="font-family:var(--display);font-size:36px;margin:0 0 12px;">${zone.name}</h2>
+          <p style="color:#991b1b;font-size:14px;line-height:1.6;">This profile failed to render. Error: <code>${String((err && err.message) || err)}</code></p>
+        </div>`;
+      }
+      overlayContent.innerHTML = html;
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      requestAnimationFrame(function () {
+        overlay.classList.add('open');
+        console.log('[Khandwa Recycles] Overlay visible for:', id);
+      });
+      try {
+        history.replaceState(null, '', '#' + id);
+      } catch (e) { /* ignore file:// */ }
+    };
+
+    if (cardEl) {
+      cardEl.classList.add('expanding');
+      setTimeout(function () {
+        cardEl.classList.remove('expanding');
+        doOpen();
+      }, 220);
+    } else {
+      doOpen();
+    }
+  };
+
+  /* ---------- GLOBAL: close overlay ---------- */
+  function closeOverlay() {
+    if (!overlay) return;
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(function () {
+      overlay.style.display = 'none';
+      overlayContent.innerHTML = '';
+    }, 440);
+    try {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    } catch (e) { /* ignore */ }
+  }
+  window.closeOverlay = closeOverlay;
+
+  /* ---------- GLOBAL: lightbox ---------- */
+  window.openLightbox = function (src, caption) {
+    if (!lightbox) return;
     lightboxImg.src = src;
     lightboxImg.alt = caption || '';
     lightboxCaption.textContent = caption || '';
-    lightbox.hidden = false;
-    requestAnimationFrame(() => lightbox.classList.add('open'));
-  }
+    lightbox.style.display = 'flex';
+    requestAnimationFrame(function () {
+      lightbox.classList.add('open');
+    });
+  };
+
   function closeLightbox() {
+    if (!lightbox) return;
     lightbox.classList.remove('open');
-    setTimeout(() => { lightbox.hidden = true; }, 300);
+    setTimeout(function () {
+      lightbox.style.display = 'none';
+      lightboxImg.src = '';
+    }, 300);
   }
+  window.closeLightbox = closeLightbox;
 
-  document.addEventListener('click', (e) => {
-    const item = e.target.closest('[data-full]');
-    if (item) {
-      e.preventDefault();
-      e.stopPropagation();
-      openLightbox(item.dataset.full, item.dataset.caption);
+  /* ---------- Boot: load data ---------- */
+  async function boot() {
+    try {
+      const results = await Promise.all([
+        fetch('data.json').then(r => { if (!r.ok) throw new Error('data.json HTTP ' + r.status); return r.json(); }),
+        fetch('zones.geojson').then(r => { if (!r.ok) throw new Error('zones.geojson HTTP ' + r.status); return r.json(); })
+      ]);
+      cityData = results[0];
+      geojson = results[1];
+      zonesById = {};
+      cityData.zones.forEach(z => { zonesById[z.id] = z; });
+      imagePoolById = {};
+      cityData.image_pool.forEach(i => { imagePoolById[i.id] = i; });
+      console.log('[Khandwa Recycles] Data loaded. Zones:', Object.keys(zonesById).length);
+    } catch (err) {
+      console.error('[Khandwa Recycles] Data load failed:', err);
+      document.body.insertAdjacentHTML('afterbegin',
+        '<div style="padding:16px 24px;background:#fef2f2;border-bottom:1px solid #fecaca;font-family:system-ui;font-size:14px;color:#991b1b;">' +
+        '<strong>Data failed to load.</strong> The browser blocked <code>fetch()</code>. Open the site through a local server ' +
+        '(<code>python3 -m http.server</code> or <code>npx serve</code>) or through the Vercel URL — not by double-clicking index.html.' +
+        '<br><br>Error: <code>' + String((err && err.message) || err) + '</code></div>'
+      );
+      return;
     }
-  });
-  lightboxClose.addEventListener('click', closeLightbox);
-  lightboxBackdrop.addEventListener('click', closeLightbox);
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !lightbox.hidden) closeLightbox();
-  });
 
-  /* ---------- Scroll reveal ---------- */
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
+    /* Cache DOM refs */
+    overlay = document.getElementById('overlay');
+    overlayContent = document.getElementById('overlay-content');
+    overlayCloseBtn = document.getElementById('overlay-close');
+    overlayBackdrop = document.getElementById('overlay-backdrop');
+    lightbox = document.getElementById('lightbox');
+    lightboxImg = document.getElementById('lightbox-img');
+    lightboxCaption = document.getElementById('lightbox-caption');
+    lightboxCloseBtn = document.getElementById('lightbox-close');
+    lightboxBackdrop = document.getElementById('lightbox-backdrop');
+
+    /* Wire overlay close buttons */
+    overlayCloseBtn.addEventListener('click', closeOverlay);
+    overlayBackdrop.addEventListener('click', closeOverlay);
+
+    /* Wire lightbox close buttons */
+    lightboxCloseBtn.addEventListener('click', closeLightbox);
+    lightboxBackdrop.addEventListener('click', closeLightbox);
+
+    /* Escape key */
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        if (lightbox.style.display === 'flex') closeLightbox();
+        else if (overlay.style.display === 'flex') closeOverlay();
       }
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-  /* ---------- Nav + topbar ---------- */
-  const topbar = document.getElementById('topbar');
-  const navLinks = document.querySelectorAll('.topnav-link');
-  const sections = ['overview', 'areas', 'map', 'gallery', 'about']
-    .map(id => document.getElementById(id))
-    .filter(Boolean);
+    /* Global delegation for lightbox images (any [data-full]) */
+    document.addEventListener('click', function (e) {
+      const item = e.target.closest('[data-full]');
+      if (item) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.openLightbox(item.dataset.full, item.dataset.caption);
+      }
+    });
 
-  function updateNav() {
-    const y = window.scrollY;
-    topbar.classList.toggle('scrolled', y > 8);
-    let current = sections[0];
-    sections.forEach(s => { if (s.offsetTop <= y + 160) current = s; });
-    navLinks.forEach(a => a.classList.toggle('active', a.dataset.section === current.id));
+    /* ---------- City strip ---------- */
+    const city = cityData.city;
+    document.getElementById('city-strip').innerHTML = [
+      { value: city.swachh_rank, unit: '', label: 'Swachh Survekshan rank' },
+      { value: city.segregation_score_pct, unit: '%', label: 'Segregation parameter score' },
+      { value: city.plastic_tpd, unit: 'T', label: 'Plastic, per day' },
+      { value: city.wards, unit: '', label: 'Administrative wards' },
+      { value: '2', unit: 'lakh', label: 'Population' }
+    ].map(function (c) {
+      return '<div class="city-cell">' +
+        '<span class="city-cell-value">' + c.value + '<span class="city-cell-unit">' + c.unit + '</span></span>' +
+        '<span class="city-cell-label">' + c.label + '</span>' +
+        '<span class="city-cell-source">Official</span>' +
+      '</div>';
+    }).join('');
+
+    /* ---------- Area cards with inline onclick ---------- */
+    const sortedZones = cityData.zones.slice().sort(function (a, b) { return b.recycle_pct - a.recycle_pct; });
+    const areaGrid = document.getElementById('area-grid');
+    areaGrid.innerHTML = sortedZones.map(function (zone, i) {
+      const info = metricInfo(zone, 'recycle');
+      const firstImage = imagePoolById[zone.image_ids[0]];
+      const img = firstImage ? firstImage.url : '';
+      const metrics = [
+        { label: 'Recycle', key: 'recycle_pct' },
+        { label: 'Plastic', key: 'plastic_pct' },
+        { label: 'Green', key: 'greenery_pct' },
+        { label: 'Clean', key: 'cleanliness_pct' }
+      ];
+      return '<button class="area-card" type="button" data-zone="' + zone.id + '" onclick="window.openZone(\'' + zone.id + '\', this)">' +
+        '<div class="area-card-media">' +
+          '<img src="' + img + '" alt="' + (firstImage ? firstImage.caption : zone.name) + '" loading="lazy" />' +
+          '<span class="area-badge" data-sentiment="' + info.sentiment + '">' + info.label + '</span>' +
+          '<span class="area-rank">' +
+            '<span class="num" style="color:' + HEX[info.sentiment] + '">#' + (i + 1) + '</span>' +
+            '<span class="lbl">of 8</span>' +
+          '</span>' +
+        '</div>' +
+        '<div class="area-card-body">' +
+          '<div class="area-card-top">' +
+            '<span class="area-card-name">' + zone.name + '</span>' +
+          '</div>' +
+          '<p class="area-card-tagline">' + (zone.tagline || '') + '</p>' +
+          '<div class="area-mini">' +
+            metrics.map(function (m) {
+              const val = zone[m.key];
+              const mi = metricInfo(zone, m.key.replace('_pct', ''));
+              return '<div class="area-mini-cell">' +
+                '<span class="area-mini-val" style="color:' + HEX[mi.sentiment] + '">' + val + '%</span>' +
+                '<span class="area-mini-label">' + m.label + '</span>' +
+              '</div>';
+            }).join('') +
+          '</div>' +
+        '</div>' +
+      '</button>';
+    }).join('');
+    console.log('[Khandwa Recycles] Cards rendered:', sortedZones.length);
+
+    /* ---------- Gallery ---------- */
+    const gallery = document.getElementById('gallery-grid');
+    gallery.innerHTML = cityData.image_pool.map(function (img) {
+      return '<div class="gallery-item" data-full="' + img.url + '" data-caption="' + img.caption + '">' +
+        '<img src="' + img.url + '" alt="' + img.caption + '" loading="lazy" />' +
+        '<div class="gallery-caption">' + img.caption + '</div>' +
+      '</div>';
+    }).join('');
+
+    /* ---------- Sources ---------- */
+    document.getElementById('sources-list').innerHTML = cityData.city.sources.map(function (s) {
+      return '<li><em>' + s.label + '</em> — ' + s.note + '</li>';
+    }).join('');
+
+    /* ---------- Map ---------- */
+    map = L.map('map', { scrollWheelZoom: false, zoomControl: true });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: 'OpenStreetMap'
+    }).addTo(map);
+    map.on('focus', function () { map.scrollWheelZoom.enable(); });
+    map.on('blur', function () { map.scrollWheelZoom.disable(); });
+
+    function styleFor(feature) {
+      const zone = zonesById[feature.properties.id];
+      if (!zone) return { color: '#fff', weight: 1, fillOpacity: 0 };
+      const info = metricInfo(zone, 'recycle');
+      return { color: '#fff', weight: 1.5, opacity: 1, fillColor: HEX[info.sentiment], fillOpacity: 0.75 };
+    }
+    function hoverStyle(feature) {
+      const base = styleFor(feature);
+      return { color: '#fff', weight: 2.5, opacity: 1, fillColor: base.fillColor, fillOpacity: 0.95 };
+    }
+
+    const layer = L.geoJSON(geojson, {
+      style: styleFor,
+      onEachFeature: function (feature, l) {
+        const zone = zonesById[feature.properties.id];
+        if (!zone) return;
+
+        const center = l.getBounds().getCenter();
+        L.marker(center, {
+          icon: L.divIcon({
+            className: 'map-label-wrapper',
+            html: '<div class="map-label">' + zone.name + '<span class="pct">' + zone.recycle_pct + '%</span></div>',
+            iconSize: [0, 0],
+            iconAnchor: [0, 0]
+          }),
+          interactive: false
+        }).addTo(map);
+
+        l.bindTooltip(zone.name + ' · ' + zone.recycle_pct + '% recycling access', {
+          sticky: true, direction: 'top', className: 'zone-tooltip', offset: [0, -6]
+        });
+        l.on('mouseover', function () { l.setStyle(hoverStyle(feature)); });
+        l.on('mouseout', function () { l.setStyle(styleFor(feature)); });
+        l.on('click', function () { window.openZone(zone.id); });
+      }
+    }).addTo(map);
+    map.fitBounds(layer.getBounds(), { padding: [40, 40] });
+
+    /* ---------- Deep link ---------- */
+    if (window.location.hash) {
+      const id = window.location.hash.slice(1);
+      if (zonesById[id]) setTimeout(function () { window.openZone(id); }, 300);
+    }
+
+    /* ---------- Scroll reveal ---------- */
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    } else {
+      document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible'); });
+    }
+
+    /* ---------- Nav + topbar ---------- */
+    const topbar = document.getElementById('topbar');
+    const navLinks = document.querySelectorAll('.topnav-link');
+    const sections = ['overview', 'areas', 'map', 'gallery', 'about']
+      .map(function (id) { return document.getElementById(id); })
+      .filter(Boolean);
+
+    function updateNav() {
+      const y = window.scrollY;
+      topbar.classList.toggle('scrolled', y > 8);
+      let current = sections[0];
+      sections.forEach(function (s) { if (s.offsetTop <= y + 160) current = s; });
+      navLinks.forEach(function (a) { a.classList.toggle('active', a.dataset.section === current.id); });
+    }
+    window.addEventListener('scroll', updateNav, { passive: true });
+    updateNav();
+
+    /* ---------- Back to top ---------- */
+    const backTop = document.getElementById('back-to-top');
+    function updateBackTop() { backTop.classList.toggle('visible', window.scrollY > 480); }
+    window.addEventListener('scroll', updateBackTop, { passive: true });
+    updateBackTop();
+    backTop.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    console.log('[Khandwa Recycles] Ready.');
   }
-  window.addEventListener('scroll', updateNav, { passive: true });
-  updateNav();
 
-  /* ---------- Back to top ---------- */
-  const backTop = document.getElementById('back-to-top');
-  function updateBackTop() { backTop.classList.toggle('visible', window.scrollY > 480); }
-  window.addEventListener('scroll', updateBackTop, { passive: true });
-  updateBackTop();
-  backTop.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
-
-  console.info('[Khandwa Recycles] Ready. 8 areas wired. Click any card.');
+  /* ---------- Start ---------- */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
 })();

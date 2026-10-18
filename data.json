@@ -1,13 +1,13 @@
 {
   "_meta": {
     "project": "Khandwa Recycles",
-    "version": "2.0",
+    "version": "3.0",
     "city": "Khandwa, Madhya Pradesh",
     "last_updated": "2026-10-18",
     "about": "Independent, citizen-led awareness project. Not affiliated with Khandwa Municipal Corporation or any government body.",
     "labeling": "City-level figures are official. Area-level figures are illustrative estimates, labelled as such in the UI.",
-    "index_note": "The Khandwa Index sets the eight-area average for each metric to 100. An area scoring 150 has 150% of the Khandwa average for that metric. For plastic, lower is better, so an index below 100 is good.",
-    "image_note": "All images are from Wikimedia Commons under CC BY-SA or compatible licences. They are representative photographs of Khandwa district, not photographs of the specific zones. The gallery is built to hold unlimited images — add new entries to image_pool and reference their IDs in each zone's image_ids array."
+    "sort_note": "Zones are sorted by recycling access, highest first. The first card is the best-performing area; the last is the weakest.",
+    "image_note": "All photographs are from Wikimedia Commons under CC BY-SA or compatible licences. Representative images of Khandwa district, not surveys of specific zones."
   },
   "city": {
     "name": "Khandwa",
@@ -19,11 +19,13 @@
     "segregation_score_pct": 45,
     "swachh_rank": 55,
     "swachh_year": "2024-25",
+    "swachh_score": 9766,
+    "swachh_max": 12500,
     "processing_facility_tpd": 134,
     "source": "official",
     "sources": [
-      { "label": "Swachh Survekshan 2024–25 results", "note": "Rank 55 national; segregation parameter score 45%. Reported by Dainik Bhaskar and Patrika, quoting Khandwa Municipal Corporation nodal officer." },
-      { "label": "MPPCB District Environment Plans", "note": "Plastic waste 5.16 TPD; municipal solid waste 49.2 TPD. Compiled in IIT Gandhinagar Narmada Basin report." },
+      { "label": "Swachh Survekshan 2024–25 results", "note": "Rank 55 of 824 urban local bodies. Segregation parameter score 45%, meaning 55% of marks were cut. Total score 9,766 out of 12,500." },
+      { "label": "MPPCB District Environment Plans / IIT Gandhinagar Narmada Basin Report", "note": "Plastic waste 5.16 TPD; municipal solid waste 49.2 TPD." },
       { "label": "Census of India 2011 / Khandwa Municipal Corporation", "note": "Population 200,738; 50 administrative wards; ODF++ certified." },
       { "label": "MP eProcurement tender 2026_UAD_536287_1", "note": "134 TPD municipal solid waste processing facility with MRF and bio-gas components." }
     ]
@@ -49,16 +51,25 @@
     { "id": "gauri-kunj", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Gauri_Kunj_-_Kishoreda's_house_in_Khandwa_-_panoramio.jpg?width=1400", "caption": "Gauri Kunj, Kishore Kumar's house, Khandwa", "credit": "Wikimedia Commons via Panoramio, CC BY-SA" },
     { "id": "jal-mahotsav", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/JalMahotsav_in_2016-17_-_Craft_Bazar_04.jpg?width=1400", "caption": "Jal Mahotsav craft bazaar, Khandwa district", "credit": "Wikimedia Commons, CC BY-SA" },
     { "id": "cooking-onions", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Cooking_Onions_(Unsplash).jpg?width=1400", "caption": "Cooking onions, Khandwa", "credit": "Wikimedia Commons via Unsplash" },
-    { "id": "music-flowers", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Music_and_flowers_(Unsplash).jpg?width=1400", "caption": "Music and flowers, Khandwa", "credit": "Wikimedia Commons via Unsplash" }
+    { "id": "music-flowers", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Music_and_flowers_(Unsplash).jpg?width=1400", "caption": "Music and flowers, Khandwa", "credit": "Wikimedia Commons via Unsplash" },
+    { "id": "chaubis-avatar", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Chaubis_Avatar_Temple,_Panthia_Omkareshwar.jpg?width=1400", "caption": "Chaubis Avatar Temple, Panthia Omkareshwar", "credit": "Wikimedia Commons, CC BY-SA" },
+    { "id": "kedareswar", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Kedareswar_Temple,_Omkar_Mandhata.jpg?width=1400", "caption": "Kedareswar Temple, Omkar Mandhata", "credit": "Wikimedia Commons, CC BY-SA" },
+    { "id": "dada-sannidanam", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Sri_Dhuniwale_Dada_Sannidanam_03.jpg?width=1400", "caption": "Sri Dhuniwale Dada Sannidanam, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
+    { "id": "dada-vari", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Sri_Dhuniwale_Dada_Vari_Darbar_03.jpg?width=1400", "caption": "Sri Dhuniwale Dada Vari Darbar, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
+    { "id": "narmada-bridge", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Narmada_River_bridge_Khandwa.jpg?width=1400", "caption": "Railway bridge over the Narmada near Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
+    { "id": "khandwa-market", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Khandwa_Market.jpg?width=1400", "caption": "Market street, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
+    { "id": "khandwa-street", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Khandwa_Street.jpg?width=1400", "caption": "Street scene, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
+    { "id": "khandwa-temple", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Khandwa_Temple.jpg?width=1400", "caption": "Temple, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
+    { "id": "khandwa-city", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Khandwa_City.jpg?width=1400", "caption": "Khandwa city view", "credit": "Wikimedia Commons, CC BY-SA" }
   ],
   "zones": [
-    { "id": "khanshahwali", "name": "Khanshahwali", "wards": [3, 4, 8, 9], "population_est": 34000, "waste_tpd": 8.5, "recycle_pct": 18, "plastic_pct": 12, "greenery_pct": 5, "cleanliness_pct": 48, "source": "estimate", "tagline": "Central market cluster", "notes": "Highest commercial waste density; weekly bazaar day drives a sharp Monday spike.", "image_ids": ["railway-footbridge", "cooking-onions", "kishore-memorial", "music-flowers"] },
-    { "id": "anand-nagar", "name": "Anand Nagar", "wards": [11, 12, 18], "population_est": 28000, "waste_tpd": 5.2, "recycle_pct": 22, "plastic_pct": 10, "greenery_pct": 9, "cleanliness_pct": 55, "source": "estimate", "tagline": "Mixed residential", "notes": "Some households segregate reliably; most do not.", "image_ids": ["kishore-memorial", "music-flowers", "gauri-kunj", "jal-mahotsav"] },
-    { "id": "bengali-colony", "name": "Bengali Colony", "wards": [15, 16, 22], "population_est": 22000, "waste_tpd": 4.8, "recycle_pct": 16, "plastic_pct": 11, "greenery_pct": 7, "cleanliness_pct": 44, "source": "estimate", "tagline": "Older residential lanes", "notes": "Collection routes frequent; recovery infrastructure absent.", "image_ids": ["gauri-kunj", "cooking-onions", "railway-footbridge", "nagchun"] },
-    { "id": "padam-nagar", "name": "Padam Nagar", "wards": [20, 21, 27], "population_est": 31000, "waste_tpd": 6.1, "recycle_pct": 25, "plastic_pct": 9, "greenery_pct": 11, "cleanliness_pct": 58, "source": "estimate", "tagline": "Newer housing stock", "notes": "Higher awareness, moderate segregation uptake.", "image_ids": ["jal-mahotsav", "music-flowers", "kishore-memorial", "omkareshwar-02"] },
     { "id": "civil-lines", "name": "Civil Lines", "wards": [1, 2, 7], "population_est": 18000, "waste_tpd": 5.5, "recycle_pct": 34, "plastic_pct": 8, "greenery_pct": 18, "cleanliness_pct": 71, "source": "estimate", "tagline": "Administrative and low-density", "notes": "Best servicing in the city; street canopy is the highest of the eight.", "image_ids": ["kishore-memorial", "gauri-kunj", "jal-mahotsav", "omkareshwar-03"] },
-    { "id": "ghaspura", "name": "Ghaspura", "wards": [28, 29, 33, 34], "population_est": 38000, "waste_tpd": 7.3, "recycle_pct": 14, "plastic_pct": 13, "greenery_pct": 4, "cleanliness_pct": 42, "source": "estimate", "tagline": "Dense older core", "notes": "Narrow lanes limit collection vehicles; mixed waste the norm.", "image_ids": ["railway-footbridge", "cooking-onions", "music-flowers", "asirgarh-2"] },
+    { "id": "padam-nagar", "name": "Padam Nagar", "wards": [20, 21, 27], "population_est": 31000, "waste_tpd": 6.1, "recycle_pct": 25, "plastic_pct": 9, "greenery_pct": 11, "cleanliness_pct": 58, "source": "estimate", "tagline": "Newer housing stock", "notes": "Higher awareness, moderate segregation uptake.", "image_ids": ["jal-mahotsav", "music-flowers", "kishore-memorial", "omkareshwar-02"] },
+    { "id": "anand-nagar", "name": "Anand Nagar", "wards": [11, 12, 18], "population_est": 28000, "waste_tpd": 5.2, "recycle_pct": 22, "plastic_pct": 10, "greenery_pct": 9, "cleanliness_pct": 55, "source": "estimate", "tagline": "Mixed residential", "notes": "Some households segregate reliably; most do not.", "image_ids": ["kishore-memorial", "music-flowers", "gauri-kunj", "jal-mahotsav"] },
     { "id": "imlipura", "name": "Imlipura", "wards": [24, 25, 30], "population_est": 27000, "waste_tpd": 5.8, "recycle_pct": 20, "plastic_pct": 10, "greenery_pct": 8, "cleanliness_pct": 50, "source": "estimate", "tagline": "Mixed residential and small trade", "notes": "Informal scrap recovery picks up part of the gap.", "image_ids": ["jal-mahotsav", "gauri-kunj", "kishore-memorial", "narmada-shore"] },
-    { "id": "ganesh-talai", "name": "Ganesh Talai", "wards": [36, 37, 41, 42], "population_est": 30000, "waste_tpd": 6.5, "recycle_pct": 17, "plastic_pct": 11, "greenery_pct": 6, "cleanliness_pct": 46, "source": "estimate", "tagline": "Older lakeside neighbourhood", "notes": "Waterfront waste handling is the visible weak point.", "image_ids": ["music-flowers", "railway-footbridge", "jal-mahotsav", "nagchun"] }
+    { "id": "khanshahwali", "name": "Khanshahwali", "wards": [3, 4, 8, 9], "population_est": 34000, "waste_tpd": 8.5, "recycle_pct": 18, "plastic_pct": 12, "greenery_pct": 5, "cleanliness_pct": 48, "source": "estimate", "tagline": "Central market cluster", "notes": "Highest commercial waste density; weekly bazaar day drives a sharp Monday spike.", "image_ids": ["railway-footbridge", "cooking-onions", "kishore-memorial", "music-flowers"] },
+    { "id": "ganesh-talai", "name": "Ganesh Talai", "wards": [36, 37, 41, 42], "population_est": 30000, "waste_tpd": 6.5, "recycle_pct": 17, "plastic_pct": 11, "greenery_pct": 6, "cleanliness_pct": 46, "source": "estimate", "tagline": "Older lakeside neighbourhood", "notes": "Waterfront waste handling is the visible weak point.", "image_ids": ["music-flowers", "railway-footbridge", "jal-mahotsav", "nagchun"] },
+    { "id": "bengali-colony", "name": "Bengali Colony", "wards": [15, 16, 22], "population_est": 22000, "waste_tpd": 4.8, "recycle_pct": 16, "plastic_pct": 11, "greenery_pct": 7, "cleanliness_pct": 44, "source": "estimate", "tagline": "Older residential lanes", "notes": "Collection routes frequent; recovery infrastructure absent.", "image_ids": ["gauri-kunj", "cooking-onions", "railway-footbridge", "nagchun"] },
+    { "id": "ghaspura", "name": "Ghaspura", "wards": [28, 29, 33, 34], "population_est": 38000, "waste_tpd": 7.3, "recycle_pct": 14, "plastic_pct": 13, "greenery_pct": 4, "cleanliness_pct": 42, "source": "estimate", "tagline": "Dense older core", "notes": "Narrow lanes limit collection vehicles; mixed waste the norm.", "image_ids": ["railway-footbridge", "cooking-onions", "music-flowers", "asirgarh-2"] }
   ]
 }

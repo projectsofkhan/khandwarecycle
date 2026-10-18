@@ -1,13 +1,13 @@
 {
   "_meta": {
     "project": "Khandwa Recycles",
-    "version": "3.0",
+    "version": "3.1",
     "city": "Khandwa, Madhya Pradesh",
     "last_updated": "2026-10-18",
     "about": "Independent, citizen-led awareness project. Not affiliated with Khandwa Municipal Corporation or any government body.",
     "labeling": "City-level figures are official. Area-level figures are illustrative estimates, labelled as such in the UI.",
     "sort_note": "Zones are sorted by recycling access, highest first. The first card is the best-performing area; the last is the weakest.",
-    "image_note": "All photographs are from Wikimedia Commons under CC BY-SA or compatible licences. Representative images of Khandwa district, not surveys of specific zones."
+    "image_note": "15 verified photographs from Wikimedia Commons under CC BY-SA. To add more (Instagram, Google Maps screenshots, your own photos), upload to imgbb or Cloudinary, then add a new object to image_pool with id/url/caption/credit and link the id in each zone's image_ids array."
   },
   "city": {
     "name": "Khandwa",
@@ -31,40 +31,25 @@
     ]
   },
   "image_pool": [
-    { "id": "omkareshwar-01", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Omkareshwar_Temple_01.jpg?width=1400", "caption": "Omkareshwar Temple, Khandwa district", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "omkareshwar-02", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Omkareshwar_Temple_02.jpg?width=1400", "caption": "Omkareshwar Temple on the Narmada", "credit": "Bernard Gagnon, Wikimedia Commons, CC BY-SA" },
-    { "id": "omkareshwar-03", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Omkareshwar_Temple_03.jpg?width=1400", "caption": "Omkareshwar Temple complex", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "omkareshwar-04", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Omkareshwar_Temple_04.jpg?width=1400", "caption": "Omkareshwar Temple carvings", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "omkareshwar-05", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Omkareshwar_Temple_05.jpg?width=1400", "caption": "Omkareshwar Temple detail", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "omkareshwar-06", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Omkareshwar_Temple_06.jpg?width=1400", "caption": "Omkareshwar Temple and ghats", "credit": "Wikimedia Commons, CC BY-SA" },
+    { "id": "omkareshwar", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Omkareshwar.jpg?width=1400", "caption": "Omkareshwar Temple, Khandwa district", "credit": "Wikimedia Commons, CC BY-SA" },
     { "id": "omkarehwar", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Omkarehwar.jpg?width=1400", "caption": "Omkareshwar from the Narmada", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "omkareshwar-old", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Omkareshwar.JPG?width=1400", "caption": "Omkareshwar temple, older photograph", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "narmada-shore", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Shore_of_Narmada_at_Omkareshwar.jpg?width=1400", "caption": "Shore of the Narmada at Omkareshwar", "credit": "K. Vishnupranay, Wikimedia Commons, CC BY-SA 4.0" },
-    { "id": "asirgarh-1", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Asirgarh_Fort1.jpg?width=1400", "caption": "Asirgarh Fort, Khandwa district", "credit": "LRBurdak, Wikimedia Commons, CC BY-SA 3.0" },
+    { "id": "omkareshwar-old", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Omkareshwar.JPG?width=1400", "caption": "Omkareshwar temple", "credit": "Wikimedia Commons, CC BY-SA" },
+    { "id": "narmada-shore", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Shore_of_Narmada_at_Omkareshwar.jpg?width=1400", "caption": "Shore of the Narmada at Omkareshwar", "credit": "K. Vishnupranay, CC BY-SA 4.0" },
+    { "id": "asirgarh-1", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Asirgarh_Fort1.jpg?width=1400", "caption": "Asirgarh Fort, Khandwa district", "credit": "LRBurdak, CC BY-SA 3.0" },
     { "id": "asirgarh-2", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Asirgarh-Fort.jpg?width=1400", "caption": "Asirgarh Fort walls", "credit": "Wikimedia Commons, CC BY-SA" },
     { "id": "asirgarh-3", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/AsirgarhFort.jpg?width=1400", "caption": "Asirgarh Fort from the plain", "credit": "Wikimedia Commons, CC BY-SA" },
     { "id": "asirgarh-4", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Asirgad.jpg?width=1400", "caption": "Asirgarh Fort ridge", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "asirgarh-5", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Asirgarh_fort_-Asirgarh-Burhanpur-(Madhya_Pradesh,_India).JPG?width=1400", "caption": "Asirgarh Fort, Madhya Pradesh", "credit": "Wikimedia Commons, CC BY-SA" },
     { "id": "nagchun", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Nagchun_Lake_Khandwa.jpg?width=1400", "caption": "Nagchun Lake, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
     { "id": "railway-footbridge", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Khandwa_Railway_Station_Footbridge,_Madhya_Pradesh.jpg?width=1400", "caption": "Khandwa Railway Station footbridge", "credit": "Wikimedia Commons, CC BY-SA" },
     { "id": "kishore-memorial", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Kishore_Kumar_memorial_in_Khandwa.jpg?width=1400", "caption": "Kishore Kumar memorial, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
     { "id": "gauri-kunj", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Gauri_Kunj_-_Kishoreda's_house_in_Khandwa_-_panoramio.jpg?width=1400", "caption": "Gauri Kunj, Kishore Kumar's house, Khandwa", "credit": "Wikimedia Commons via Panoramio, CC BY-SA" },
     { "id": "jal-mahotsav", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/JalMahotsav_in_2016-17_-_Craft_Bazar_04.jpg?width=1400", "caption": "Jal Mahotsav craft bazaar, Khandwa district", "credit": "Wikimedia Commons, CC BY-SA" },
     { "id": "cooking-onions", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Cooking_Onions_(Unsplash).jpg?width=1400", "caption": "Cooking onions, Khandwa", "credit": "Wikimedia Commons via Unsplash" },
-    { "id": "music-flowers", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Music_and_flowers_(Unsplash).jpg?width=1400", "caption": "Music and flowers, Khandwa", "credit": "Wikimedia Commons via Unsplash" },
-    { "id": "chaubis-avatar", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Chaubis_Avatar_Temple,_Panthia_Omkareshwar.jpg?width=1400", "caption": "Chaubis Avatar Temple, Panthia Omkareshwar", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "kedareswar", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Kedareswar_Temple,_Omkar_Mandhata.jpg?width=1400", "caption": "Kedareswar Temple, Omkar Mandhata", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "dada-sannidanam", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Sri_Dhuniwale_Dada_Sannidanam_03.jpg?width=1400", "caption": "Sri Dhuniwale Dada Sannidanam, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "dada-vari", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Sri_Dhuniwale_Dada_Vari_Darbar_03.jpg?width=1400", "caption": "Sri Dhuniwale Dada Vari Darbar, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "narmada-bridge", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Narmada_River_bridge_Khandwa.jpg?width=1400", "caption": "Railway bridge over the Narmada near Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "khandwa-market", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Khandwa_Market.jpg?width=1400", "caption": "Market street, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "khandwa-street", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Khandwa_Street.jpg?width=1400", "caption": "Street scene, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "khandwa-temple", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Khandwa_Temple.jpg?width=1400", "caption": "Temple, Khandwa", "credit": "Wikimedia Commons, CC BY-SA" },
-    { "id": "khandwa-city", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Khandwa_City.jpg?width=1400", "caption": "Khandwa city view", "credit": "Wikimedia Commons, CC BY-SA" }
+    { "id": "music-flowers", "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Music_and_flowers_(Unsplash).jpg?width=1400", "caption": "Music and flowers, Khandwa", "credit": "Wikimedia Commons via Unsplash" }
   ],
   "zones": [
-    { "id": "civil-lines", "name": "Civil Lines", "wards": [1, 2, 7], "population_est": 18000, "waste_tpd": 5.5, "recycle_pct": 34, "plastic_pct": 8, "greenery_pct": 18, "cleanliness_pct": 71, "source": "estimate", "tagline": "Administrative and low-density", "notes": "Best servicing in the city; street canopy is the highest of the eight.", "image_ids": ["kishore-memorial", "gauri-kunj", "jal-mahotsav", "omkareshwar-03"] },
-    { "id": "padam-nagar", "name": "Padam Nagar", "wards": [20, 21, 27], "population_est": 31000, "waste_tpd": 6.1, "recycle_pct": 25, "plastic_pct": 9, "greenery_pct": 11, "cleanliness_pct": 58, "source": "estimate", "tagline": "Newer housing stock", "notes": "Higher awareness, moderate segregation uptake.", "image_ids": ["jal-mahotsav", "music-flowers", "kishore-memorial", "omkareshwar-02"] },
+    { "id": "civil-lines", "name": "Civil Lines", "wards": [1, 2, 7], "population_est": 18000, "waste_tpd": 5.5, "recycle_pct": 34, "plastic_pct": 8, "greenery_pct": 18, "cleanliness_pct": 71, "source": "estimate", "tagline": "Administrative and low-density", "notes": "Best servicing in the city; street canopy is the highest of the eight.", "image_ids": ["kishore-memorial", "gauri-kunj", "jal-mahotsav", "omkareshwar"] },
+    { "id": "padam-nagar", "name": "Padam Nagar", "wards": [20, 21, 27], "population_est": 31000, "waste_tpd": 6.1, "recycle_pct": 25, "plastic_pct": 9, "greenery_pct": 11, "cleanliness_pct": 58, "source": "estimate", "tagline": "Newer housing stock", "notes": "Higher awareness, moderate segregation uptake.", "image_ids": ["jal-mahotsav", "music-flowers", "kishore-memorial", "omkarehwar"] },
     { "id": "anand-nagar", "name": "Anand Nagar", "wards": [11, 12, 18], "population_est": 28000, "waste_tpd": 5.2, "recycle_pct": 22, "plastic_pct": 10, "greenery_pct": 9, "cleanliness_pct": 55, "source": "estimate", "tagline": "Mixed residential", "notes": "Some households segregate reliably; most do not.", "image_ids": ["kishore-memorial", "music-flowers", "gauri-kunj", "jal-mahotsav"] },
     { "id": "imlipura", "name": "Imlipura", "wards": [24, 25, 30], "population_est": 27000, "waste_tpd": 5.8, "recycle_pct": 20, "plastic_pct": 10, "greenery_pct": 8, "cleanliness_pct": 50, "source": "estimate", "tagline": "Mixed residential and small trade", "notes": "Informal scrap recovery picks up part of the gap.", "image_ids": ["jal-mahotsav", "gauri-kunj", "kishore-memorial", "narmada-shore"] },
     { "id": "khanshahwali", "name": "Khanshahwali", "wards": [3, 4, 8, 9], "population_est": 34000, "waste_tpd": 8.5, "recycle_pct": 18, "plastic_pct": 12, "greenery_pct": 5, "cleanliness_pct": 48, "source": "estimate", "tagline": "Central market cluster", "notes": "Highest commercial waste density; weekly bazaar day drives a sharp Monday spike.", "image_ids": ["railway-footbridge", "cooking-onions", "kishore-memorial", "music-flowers"] },

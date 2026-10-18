@@ -18,7 +18,7 @@
   };
 
   /* ---------- Data load ---------- */
-  let cityData, zonesById, geojson;
+  let cityData, zonesById, geojson, cityAverage;
   try {
     const [cityRes, geoRes] = await Promise.all([
       fetch(CONFIG.dataUrl).then(r => r.json()),
@@ -27,6 +27,7 @@
     cityData = cityRes;
     geojson = geoRes;
     zonesById = Object.fromEntries(cityData.zones.map(z => [z.id, z]));
+    cityAverage = cityData.zones.reduce((sum, z) => sum + z.recycle_pct, 0) / cityData.zones.length;
   } catch (err) {
     console.error('[Khandwa Recycles] Failed to load data:', err);
     return;
@@ -213,6 +214,15 @@
     const scoreLabel = labelForScore(score);
     const scoreColor = colorForScore(score);
 
+    const avg = cityAverage;
+    const diff = score - avg;
+    const diffAbs = Math.abs(diff).toFixed(1).replace(/\.0$/, '');
+    const diffText = diff === 0
+      ? 'This zone sits exactly at the Khandwa average.'
+      : diff > 0
+        ? `This zone sits ${diffAbs} points above the Khandwa average.`
+        : `This zone sits ${diffAbs} points below the Khandwa average.`;
+
     const streetView = zone.streetview_url
       ? `<div class="panel-streetview"><iframe src="${zone.streetview_url}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Street view of ${zone.name}"></iframe></div>`
       : '';
@@ -235,6 +245,18 @@
         <p class="panel-score-note">${scoreLabel} — illustrative estimate</p>
       </div>
 
+      <div class="panel-compare">
+        <div class="compare-row">
+          <span class="compare-label">Khandwa average, eight zones</span>
+          <span class="compare-value">${avg.toFixed(1)}%</span>
+        </div>
+        <div class="compare-row compare-current">
+          <span class="compare-label">${zone.name}</span>
+          <span class="compare-value">${score}%</span>
+        </div>
+        <p class="compare-note">${diffText}</p>
+      </div>
+
       <div class="panel-tiles">
         <div class="tile">
           <span class="tile-label">Waste per day</span>
@@ -255,6 +277,9 @@
       </div>
 
       ${zone.notes ? `<p class="panel-notes">${zone.notes}</p>` : ''}
+
+      <p class="panel-def">Recycling access estimates the share of dry waste recovered through formal collection, informal scrap networks, or processing. It is not the same as source segregation, which Khandwa reports at 45% city-wide.</p>
+
       ${streetView}
 
       <p class="panel-source"><span class="badge ${badgeClass}">${badgeText}</span></p>

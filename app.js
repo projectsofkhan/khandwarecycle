@@ -1,8 +1,7 @@
 (async function () {
   'use strict';
 
-  /* ---------- Data ---------- */
-  let cityData, geojson, zonesById, averages, imagePoolById;
+  let cityData, geojson, zonesById, imagePoolById;
 
   try {
     const [cityRes, geoRes] = await Promise.all([
@@ -13,12 +12,6 @@
     geojson = geoRes;
     zonesById = Object.fromEntries(cityData.zones.map(z => [z.id, z]));
     imagePoolById = Object.fromEntries(cityData.image_pool.map(i => [i.id, i]));
-
-    const keys = ['recycle_pct', 'plastic_pct', 'greenery_pct', 'cleanliness_pct'];
-    averages = {};
-    keys.forEach(k => {
-      averages[k] = cityData.zones.reduce((s, z) => s + z[k], 0) / cityData.zones.length;
-    });
   } catch (err) {
     console.error('[Khandwa Recycles] Data load failed:', err);
     return;
@@ -51,25 +44,6 @@
     }
     return { value, label: '—', sentiment: 'mid' };
   }
-
-  function indexValue(zone, key) {
-    const metric = key.replace('_pct', '');
-    const raw = zone[key] / averages[key];
-    const index = Math.round(raw * 100);
-    let sentiment;
-    if (metric === 'plastic') {
-      if (index < 100) sentiment = 'good';
-      else if (index < 115) sentiment = 'mid';
-      else sentiment = 'bad';
-    } else {
-      if (index > 110) sentiment = 'good';
-      else if (index > 90) sentiment = 'mid';
-      else sentiment = 'bad';
-    }
-    return { index, sentiment };
-  }
-
-  function idxClass(s) { return s === 'bad' ? 'idx-bad' : s === 'mid' ? 'idx-mid' : 'idx-good'; }
 
   /* ---------- Tips ---------- */
   const TIPS = {
@@ -109,26 +83,6 @@
     return picks.slice(0, 3).map(p => TIPS[p.key]);
   }
 
-  /* ---------- Hero index count-up ---------- */
-  (function countUp() {
-    const el = document.getElementById('hero-index-number');
-    if (!el) return;
-    let start = null;
-    const duration = 1600;
-    const target = 100;
-    function step(ts) {
-      if (!start) start = ts;
-      const progress = Math.min((ts - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 4);
-      el.textContent = Math.round(eased * target);
-      if (progress < 1) requestAnimationFrame(step);
-    }
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) { requestAnimationFrame(step); observer.disconnect(); }
-    }, { threshold: 0.4 });
-    observer.observe(el);
-  })();
-
   /* ---------- City strip ---------- */
   const city = cityData.city;
   document.getElementById('city-strip').innerHTML = [
@@ -145,11 +99,12 @@
     </div>
   `).join('');
 
-  /* ---------- Area cards ---------- */
+  /* ---------- Area cards (sorted best to worst) ---------- */
+  const sortedZones = [...cityData.zones].sort((a, b) => b.recycle_pct - a.recycle_pct);
+
   const areaGrid = document.getElementById('area-grid');
-  areaGrid.innerHTML = cityData.zones.map(zone => {
+  areaGrid.innerHTML = sortedZones.map((zone, i) => {
     const info = metricInfo(zone, 'recycle');
-    const idx = indexValue(zone, 'recycle_pct');
     const firstImage = imagePoolById[zone.image_ids[0]];
     const img = firstImage ? firstImage.url : '';
     const metrics = [
@@ -163,9 +118,9 @@
         <div class="area-card-media">
           <img src="${img}" alt="${firstImage ? firstImage.caption : zone.name}" loading="lazy" />
           <span class="area-badge" data-sentiment="${info.sentiment}">${info.label}</span>
-          <span class="area-index-badge">
-            <span class="idx" style="color:${HEX[idx.sentiment]}">${idx.index}</span>
-            <span class="lbl">index</span>
+          <span class="area-rank">
+            <span class="num" style="color:${HEX[info.sentiment]}">#${i + 1}</span>
+            <span class="lbl">of 8</span>
           </span>
         </div>
         <div class="area-card-body">
@@ -188,31 +143,9 @@
     `;
   }).join('');
 
-  /* ---------- Index table ---------- */
-  const indexMetrics = [
-    { key: 'recycle_pct', label: 'Recycling' },
-    { key: 'plastic_pct', label: 'Plastic' },
-    { key: 'greenery_pct', label: 'Greenery' },
-    { key: 'cleanliness_pct', label: 'Cleanliness' }
-  ];
-
-  function buildIndexTable() {
-    const head = `<tr><th>Area</th>${indexMetrics.map(m => `<th>${m.label}</th>`).join('')}</tr>`;
-    const rows = cityData.zones.map(z => {
-      const cells = indexMetrics.map(m => {
-        const { index, sentiment } = indexValue(z, m.key);
-        return `<td class="${idxClass(sentiment)}">${index}<span class="idx-unit">idx</span></td>`;
-      }).join('');
-      return `<tr><td>${z.name}</td>${cells}</tr>`;
-    }).join('');
-    const baseRow = `<tr class="row-base"><td>Khandwa average (baseline)</td>${indexMetrics.map(() => `<td>100<span class="idx-unit">idx</span></td>`).join('')}</tr>`;
-    return `<table><thead>${head}</thead><tbody>${rows}${baseRow}</tbody></table>`;
-  }
-  document.getElementById('index-table').innerHTML = buildIndexTable();
-
   /* ---------- Gallery ---------- */
   const gallery = document.getElementById('gallery-grid');
-  gallery.innerHTML = cityData.image_pool.map((img, i) => `
+  gallery.innerHTML = cityData.image_pool.map(img => `
     <div class="gallery-item" data-full="${img.url}" data-caption="${img.caption}">
       <img src="${img.url}" alt="${img.caption}" loading="lazy" />
       <div class="gallery-caption">${img.caption}</div>
@@ -224,7 +157,7 @@
     .map(s => `<li><em>${s.label}</em> — ${s.note}</li>`)
     .join('');
 
-  /* ---------- Map ---------- */
+  /* ---------- Map with labels ---------- */
   const map = L.map('map', { scrollWheelZoom: false, zoomControl: true });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19, attribution: 'OpenStreetMap'
@@ -247,6 +180,20 @@
     onEachFeature: (feature, l) => {
       const zone = zonesById[feature.properties.id];
       if (!zone) return;
+
+      const info = metricInfo(zone, 'recycle');
+      const center = l.getBounds().getCenter();
+
+      L.marker(center, {
+        icon: L.divIcon({
+          className: 'map-label-wrapper',
+          html: `<div class="map-label">${zone.name}<span class="pct">${zone.recycle_pct}%</span></div>`,
+          iconSize: [0, 0],
+          iconAnchor: [0, 0]
+        }),
+        interactive: false
+      }).addTo(map);
+
       l.bindTooltip(`${zone.name} · ${zone.recycle_pct}% recycling access`, {
         sticky: true, direction: 'top', className: 'zone-tooltip', offset: [0, -6]
       });
@@ -255,7 +202,7 @@
       l.on('click', () => openZone(zone.id));
     }
   }).addTo(map);
-  map.fitBounds(layer.getBounds(), { padding: [32, 32] });
+  map.fitBounds(layer.getBounds(), { padding: [40, 40] });
 
   /* ---------- Overlay ---------- */
   const overlay = document.getElementById('overlay');
@@ -286,7 +233,6 @@
     if (e.key === 'Escape' && !overlay.hidden) closeOverlay();
   });
 
-  /* Direct card listeners — guaranteed click-to-open */
   document.querySelectorAll('.area-card').forEach(card => {
     card.addEventListener('click', (e) => {
       e.preventDefault();
@@ -294,16 +240,14 @@
     });
   });
 
-  /* Deep-link support: #civil-lines opens directly */
   if (window.location.hash) {
     const id = window.location.hash.slice(1);
     if (zonesById[id]) setTimeout(() => openZone(id), 300);
   }
 
   function renderZoneOverlay(zone) {
-    const info = metricInfo(zone, 'recycle');
     const hero = imagePoolById[zone.image_ids[0]];
-    const gallery = zone.image_ids.map(id => imagePoolById[id]).filter(Boolean);
+    const galleryImgs = zone.image_ids.map(id => imagePoolById[id]).filter(Boolean);
 
     const metrics = [
       { key: 'recycle', label: 'Recycling access' },
@@ -312,7 +256,6 @@
       { key: 'cleanliness', label: 'Cleanliness' }
     ];
 
-    const idx = indexValue(zone, 'recycle_pct');
     const tips = tipsFor(zone);
 
     return `
@@ -327,27 +270,16 @@
       <div class="ov-metrics">
         ${metrics.map(m => {
           const mi = metricInfo(zone, m.key);
-          const ix = indexValue(zone, m.key + '_pct');
           return `<div class="ov-metric">
             <span class="ov-metric-label">${m.label}</span>
             <span class="ov-metric-value" style="color:${HEX[mi.sentiment]}">${mi.value}%</span>
-            <span class="ov-metric-index" style="color:${HEX[ix.sentiment]}">${ix.index} index · ${mi.label}</span>
+            <span class="ov-metric-index" style="color:${HEX[mi.sentiment]}">${mi.label}</span>
           </div>`;
         }).join('')}
       </div>
 
-      <div class="ov-index-box">
-        <h4>Recycling index against Khandwa = 100</h4>
-        <div class="big" style="color:${HEX[idx.sentiment]}">${idx.index}</div>
-        <p>${idx.index > 100
-          ? `${zone.name} recycles at ${idx.index}% of the Khandwa average — above the eight-area baseline.`
-          : idx.index < 100
-            ? `${zone.name} recycles at ${idx.index}% of the Khandwa average — below the eight-area baseline.`
-            : `${zone.name} sits exactly at the Khandwa average.`}</p>
-      </div>
-
       <div class="ov-gallery">
-        ${gallery.map(g => `<img src="${g.url}" alt="${g.caption}" loading="lazy" data-full="${g.url}" data-caption="${g.caption}" class="ov-gallery-img" />`).join('')}
+        ${galleryImgs.map(g => `<img src="${g.url}" alt="${g.caption}" loading="lazy" data-full="${g.url}" data-caption="${g.caption}" />`).join('')}
       </div>
 
       <div class="ov-tips">
@@ -413,14 +345,13 @@
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-  /* ---------- Nav active + topbar ---------- */
+  /* ---------- Nav + topbar ---------- */
   const topbar = document.getElementById('topbar');
   const navLinks = document.querySelectorAll('.topnav-link');
-  const sections = ['overview', 'areas', 'index', 'map', 'gallery', 'about']
+  const sections = ['overview', 'areas', 'map', 'gallery', 'about']
     .map(id => document.getElementById(id))
     .filter(Boolean);
 
-  let lastScroll = 0;
   function updateNav() {
     const y = window.scrollY;
     topbar.classList.toggle('scrolled', y > 8);
@@ -438,5 +369,5 @@
   updateBackTop();
   backTop.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-  console.info('[Khandwa Recycles] Ready. Khandwa Index = 100.');
+  console.info('[Khandwa Recycles] Ready.');
 })();

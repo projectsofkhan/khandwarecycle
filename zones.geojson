@@ -1,0 +1,147 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "note": "Approximate super-zone polygons for Khandwa. Arranged around the city centre (76.352, 21.8257) with organic edges and shared boundaries, but NOT surveyed ward boundaries. Redraw in geojson.io before exhibition using the workflow in README.md.",
+    "center": [76.352, 21.8257],
+    "revision": "0.3",
+    "status": "approximate",
+    "how_to_redraw": "Open geojson.io, paste this file, pan to Khandwa, drag vertices to match real area boundaries over satellite view, download as zones.geojson, replace this file.",
+    "ward_boundary_reality": "Khandwa's official 50-ward boundaries are not published as open data. These polygons approximate the eight named areas that locals recognise. They are for orientation and demonstration only."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "id": "padam-nagar" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [76.3180, 21.8600],
+          [76.3348, 21.8624],
+          [76.3480, 21.8580],
+          [76.3502, 21.8460],
+          [76.3420, 21.8432],
+          [76.3250, 21.8450],
+          [76.3180, 21.8600]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "civil-lines" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [76.3480, 21.8580],
+          [76.3652, 21.8622],
+          [76.3782, 21.8600],
+          [76.3800, 21.8460],
+          [76.3720, 21.8432],
+          [76.3502, 21.8460],
+          [76.3480, 21.8580]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "ganesh-talai" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [76.3782, 21.8600],
+          [76.3950, 21.8612],
+          [76.4080, 21.8560],
+          [76.4062, 21.8420],
+          [76.3950, 21.8450],
+          [76.3800, 21.8460],
+          [76.3782, 21.8600]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "anand-nagar" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [76.3250, 21.8450],
+          [76.3420, 21.8432],
+          [76.3502, 21.8460],
+          [76.3520, 21.8320],
+          [76.3440, 21.8250],
+          [76.3280, 21.8230],
+          [76.3200, 21.8320],
+          [76.3250, 21.8450]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "khanshahwali" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [76.3502, 21.8460],
+          [76.3720, 21.8432],
+          [76.3800, 21.8460],
+          [76.3820, 21.8300],
+          [76.3720, 21.8240],
+          [76.3520, 21.8220],
+          [76.3520, 21.8320],
+          [76.3502, 21.8460]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "bengali-colony" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [76.3800, 21.8460],
+          [76.3950, 21.8450],
+          [76.4062, 21.8420],
+          [76.4080, 21.8300],
+          [76.3980, 21.8240],
+          [76.3820, 21.8300],
+          [76.3800, 21.8460]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "imlipura" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [76.3200, 21.8320],
+          [76.3280, 21.8230],
+          [76.3440, 21.8250],
+          [76.3520, 21.8220],
+          [76.3500, 21.8060],
+          [76.3400, 21.7980],
+          [76.3240, 21.8000],
+          [76.3180, 21.8150],
+          [76.3200, 21.8320]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "ghaspura" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [76.3520, 21.8220],
+          [76.3720, 21.8240],
+          [76.3820, 21.8300],
+          [76.3980, 21.8240],
+          [76.3960, 21.8080],
+          [76.3800, 21.8000],
+          [76.3620, 21.7980],
+          [76.3500, 21.8060],
+          [76.3520, 21.8220]
+        ]]
+      }
+    }
+  ]
+}

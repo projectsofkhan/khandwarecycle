@@ -29,9 +29,14 @@
           <p class="lede">An independent project. City-level figures are official. Area-level figures are carefully modelled estimates, labelled as such.</p>
         </header>
 
-        <section class="section" aria-labelledby="stats-title">
+        <figure class="hero-image reveal">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/62/Khandwa_Railway_Station_Footbridge%2C_Madhya_Pradesh.jpg" alt="Khandwa Railway Station footbridge" loading="eager" />
+          <figcaption>Khandwa Railway Station footbridge. Photo: Wikimedia Commons, CC BY-SA.</figcaption>
+        </figure>
+
+        <section class="section reveal" aria-labelledby="stats-title">
           <h2 class="section-heading" id="stats-title">Khandwa, at a glance</h2>
-          <p class="section-sub">Five official numbers that describe the city.</p>
+          <p class="section-sub">Five official numbers that describe the city. The segregation score is a weakness, not a strength.</p>
 
           <div class="city-stats">
             <div class="stat">
@@ -41,7 +46,7 @@
             </div>
             <div class="stat">
               <span class="stat-value">45<span class="stat-unit">%</span></span>
-              <span class="stat-label">Source segregation</span>
+              <span class="stat-label">Segregation parameter score</span>
               <span class="stat-source">Official</span>
             </div>
             <div class="stat">
@@ -62,79 +67,21 @@
           </div>
         </section>
 
-        <section class="section" aria-labelledby="choose-title">
+        <section class="section reveal" aria-labelledby="choose-title">
           <h2 class="section-heading" id="choose-title">Choose your area</h2>
           <p class="section-sub">Eight areas across Khandwa. Tap one to see its numbers, how it compares, and three things it can improve.</p>
 
-          <div class="zone-grid">
-            <button class="zone-btn" type="button" data-zone="khanshahwali" data-sentiment="bad">
-              <span class="zone-btn-top">
-                <span class="zone-name">Khanshahwali</span>
-                <span class="zone-dot" aria-hidden="true"></span>
-              </span>
-              <span class="zone-pct">18%</span>
-              <span class="zone-pct-label">recycling access</span>
-            </button>
-            <button class="zone-btn" type="button" data-zone="anand-nagar" data-sentiment="mid">
-              <span class="zone-btn-top">
-                <span class="zone-name">Anand Nagar</span>
-                <span class="zone-dot" aria-hidden="true"></span>
-              </span>
-              <span class="zone-pct">22%</span>
-              <span class="zone-pct-label">recycling access</span>
-            </button>
-            <button class="zone-btn" type="button" data-zone="bengali-colony" data-sentiment="bad">
-              <span class="zone-btn-top">
-                <span class="zone-name">Bengali Colony</span>
-                <span class="zone-dot" aria-hidden="true"></span>
-              </span>
-              <span class="zone-pct">16%</span>
-              <span class="zone-pct-label">recycling access</span>
-            </button>
-            <button class="zone-btn" type="button" data-zone="padam-nagar" data-sentiment="mid">
-              <span class="zone-btn-top">
-                <span class="zone-name">Padam Nagar</span>
-                <span class="zone-dot" aria-hidden="true"></span>
-              </span>
-              <span class="zone-pct">25%</span>
-              <span class="zone-pct-label">recycling access</span>
-            </button>
-            <button class="zone-btn" type="button" data-zone="civil-lines" data-sentiment="good">
-              <span class="zone-btn-top">
-                <span class="zone-name">Civil Lines</span>
-                <span class="zone-dot" aria-hidden="true"></span>
-              </span>
-              <span class="zone-pct">34%</span>
-              <span class="zone-pct-label">recycling access</span>
-            </button>
-            <button class="zone-btn" type="button" data-zone="ghaspura" data-sentiment="bad">
-              <span class="zone-btn-top">
-                <span class="zone-name">Ghaspura</span>
-                <span class="zone-dot" aria-hidden="true"></span>
-              </span>
-              <span class="zone-pct">14%</span>
-              <span class="zone-pct-label">recycling access</span>
-            </button>
-            <button class="zone-btn" type="button" data-zone="imlipura" data-sentiment="mid">
-              <span class="zone-btn-top">
-                <span class="zone-name">Imlipura</span>
-                <span class="zone-dot" aria-hidden="true"></span>
-              </span>
-              <span class="zone-pct">20%</span>
-              <span class="zone-pct-label">recycling access</span>
-            </button>
-            <button class="zone-btn" type="button" data-zone="ganesh-talai" data-sentiment="bad">
-              <span class="zone-btn-top">
-                <span class="zone-name">Ganesh Talai</span>
-                <span class="zone-dot" aria-hidden="true"></span>
-              </span>
-              <span class="zone-pct">17%</span>
-              <span class="zone-pct-label">recycling access</span>
-            </button>
-          </div>
+          <div class="zone-grid" id="zone-grid"></div>
         </section>
 
-        <section class="section" aria-labelledby="map-title">
+        <section class="section reveal" aria-labelledby="compare-title">
+          <h2 class="section-heading" id="compare-title">Compare the eight areas</h2>
+          <p class="section-sub">All four metrics, side by side. The Khandwa average is the average of these eight areas, not an official city-wide figure.</p>
+
+          <div class="compare-table" id="compare-table"></div>
+        </section>
+
+        <section class="section reveal" aria-labelledby="map-title">
           <h2 class="section-heading" id="map-title">The eight zones on the map</h2>
           <p class="section-sub">Colour shows recycling access. Click any zone to open it.</p>
 
@@ -144,24 +91,15 @@
 
           <div class="map-legend" aria-label="Recycling access legend">
             <span class="legend-title">Recycling access</span>
-            <span class="legend-item">
-              <span class="legend-swatch legend-low"></span>
-              Low, below 20%
-            </span>
-            <span class="legend-item">
-              <span class="legend-swatch legend-mid"></span>
-              Moderate, 20 to 30%
-            </span>
-            <span class="legend-item">
-              <span class="legend-swatch legend-high"></span>
-              Higher, above 30%
-            </span>
+            <span class="legend-item"><span class="legend-swatch legend-low"></span>Low, below 20%</span>
+            <span class="legend-item"><span class="legend-swatch legend-mid"></span>Moderate, 20 to 30%</span>
+            <span class="legend-item"><span class="legend-swatch legend-high"></span>Higher, above 30%</span>
           </div>
 
           <p class="data-note">Illustrative recycling access zones for demonstration — city-level figures are official.</p>
         </section>
 
-        <section class="section qr-section" aria-labelledby="qr-title">
+        <section class="section qr-section reveal" aria-labelledby="qr-title">
           <div class="qr-text">
             <h2 class="section-heading" id="qr-title">Continue on your phone</h2>
             <p class="section-sub">Scan to open the same map in your pocket. The same areas, the same numbers, the same caveats.</p>
@@ -184,11 +122,13 @@
           <p class="zone-wards" id="zone-wards"></p>
         </header>
 
+        <figure class="zone-image reveal" id="zone-image"></figure>
+
         <div class="zone-metrics" id="zone-metrics"></div>
 
         <div class="zone-compare" id="zone-compare"></div>
 
-        <section class="section tips-section" aria-labelledby="tips-title">
+        <section class="section tips-section reveal" aria-labelledby="tips-title">
           <h2 class="section-heading" id="tips-title">What this area can improve</h2>
           <p class="section-sub">Three actions, based on the numbers above.</p>
           <ol class="tips-list" id="tips-list"></ol>
@@ -210,6 +150,15 @@
       <p>City-level figures are drawn from publicly available official sources, including the Swachh Survekshan 2024–25 results, municipal solid waste records, and CPCB publications.</p>
       <p>Neighbourhood-level figures for the eight super-zones (Khanshahwali, Anand Nagar, Bengali Colony, Padam Nagar, Civil Lines, Ghaspura, Imlipura, Ganesh Talai) are <strong>illustrative estimates</strong> based on observed service patterns and local field notes. They are not official ward-level statistics and should not be treated as such.</p>
       <p>This site is provided <strong>for information and awareness only</strong>. It is not a basis for legal, financial, commercial, or policy decisions. If you spot an error or have better local data, please reach out — the map improves when residents correct it.</p>
+
+      <h2 class="sources-heading">Sources</h2>
+      <ul class="sources-list">
+        <li>Swachh Survekshan 2024–25 results. Rank 55 national; segregation parameter score 45%. Reported by <em>Dainik Bhaskar</em> and <em>Patrika</em>, quoting Khandwa Municipal Corporation nodal officer Sachin Sitole.</li>
+        <li>MPPCB District Environment Plans, compiled in <em>IIT Gandhinagar, Narmada Basin Infrastructure and Planning Report</em>. Plastic waste 5.16 TPD; municipal solid waste 49.2 TPD.</li>
+        <li>Census of India 2011 and Khandwa Municipal Corporation. Population 200,738; 50 administrative wards; ODF++ certified.</li>
+        <li>Madhya Pradesh eProcurement tender 2026_UAD_536287_1. 134 TPD municipal solid waste processing facility with MRF and bio-gas components.</li>
+        <li>Photographs: Wikimedia Commons, CC BY-SA. Representative images of Khandwa, not photographs of the specific zones.</li>
+      </ul>
     </footer>
   </div>
 

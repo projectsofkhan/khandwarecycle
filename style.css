@@ -7,7 +7,7 @@
 :root {
   --bg: #ffffff;
   --surface-soft: #fafafa;
-  --surface-active: #f5f5f5;
+  --surface-active: #f2f2f2;
   --ink: #111111;
   --ink-muted: #666666;
   --ink-faint: #999999;
@@ -19,7 +19,7 @@
   --amber-600: #d97706;
   --yellow-600: #ca8a04;
   --green-700: #15803d;
-  --radius: 4px;
+  --radius: 2px;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --duration: 240ms;
   --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -55,13 +55,13 @@ main {
   font-size: clamp(30px, 4.2vw, 50px);
   font-weight: 600;
   line-height: 1.14;
-  letter-spacing: -0.022em;
-  margin: 0 0 22px;
+  letter-spacing: -0.024em;
+  margin: 0 0 24px;
   color: var(--ink);
 }
 .hero p {
   font-size: 17px;
-  line-height: 1.6;
+  line-height: 1.62;
   color: var(--ink-muted);
   margin: 0;
   max-width: 720px;
@@ -96,8 +96,9 @@ main {
   font-size: 34px;
   font-weight: 600;
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 .stat-unit {
   font-size: 13px;
@@ -131,7 +132,7 @@ main {
 .map-toolbar h2 {
   font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   margin: 0;
 }
 .map-sub {
@@ -242,7 +243,7 @@ main {
 .zone-panel-content h3 {
   font-size: 22px;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   margin: 0 0 4px;
   padding-right: 32px;
 }
@@ -254,11 +255,18 @@ main {
   letter-spacing: 0.06em;
 }
 
-/* ---------- Data note under map ---------- */
+/* ---------- Data notes under map ---------- */
 .data-note {
   font-size: 13px;
   color: var(--ink-faint);
   margin: 16px 0 0;
+}
+.data-def {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 8px 0 0;
+  max-width: 720px;
 }
 
 /* ---------- QR section ---------- */
@@ -278,7 +286,7 @@ main {
 .qr-text h2 {
   font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   margin: 0 0 8px;
 }
 .qr-text p {
@@ -316,7 +324,7 @@ main {
 }
 .site-footer strong { color: var(--ink); font-weight: 600; }
 
-/* ---------- Rendered panel internals ---------- */
+/* ---------- Panel: recycling block ---------- */
 .panel-recycle { margin: 4px 0 24px; }
 .panel-recycle-head {
   display: flex;
@@ -342,12 +350,12 @@ main {
   width: 100%;
   height: 6px;
   background: #f0f0f0;
-  border-radius: 3px;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 .bar-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: var(--radius);
   transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .panel-score-note {
@@ -356,6 +364,38 @@ main {
   margin: 8px 0 0;
 }
 
+/* ---------- Panel: comparison ---------- */
+.panel-compare {
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  padding: 16px 0;
+  margin: 0 0 20px;
+}
+.compare-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 13px;
+}
+.compare-row .compare-label {
+  color: var(--ink-muted);
+}
+.compare-row .compare-value {
+  color: var(--ink-muted);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+.compare-row.compare-current .compare-label { color: var(--ink); font-weight: 500; }
+.compare-row.compare-current .compare-value { color: var(--ink); font-weight: 600; }
+.compare-note {
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin: 8px 0 0;
+}
+
+/* ---------- Panel: tiles ---------- */
 .panel-tiles {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -384,7 +424,7 @@ main {
   font-weight: 600;
   color: var(--ink);
   line-height: 1;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.018em;
   font-variant-numeric: tabular-nums;
 }
 .tile-unit {
@@ -395,13 +435,20 @@ main {
   letter-spacing: 0;
 }
 
+/* ---------- Panel: notes, definition, source ---------- */
 .panel-notes {
   font-size: 13px;
   line-height: 1.6;
   color: var(--ink-muted);
-  margin: 0 0 20px;
+  margin: 0 0 16px;
   padding-top: 16px;
   border-top: 1px solid var(--hairline);
+}
+.panel-def {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink-faint);
+  margin: 0 0 16px;
 }
 .panel-streetview {
   border: 1px solid var(--hairline);
@@ -437,7 +484,7 @@ main {
   display: inline-block;
   width: 10px;
   height: 10px;
-  border-radius: 2px;
+  border-radius: 0;
 }
 
 /* ---------- Leaflet quiet overrides ---------- */
@@ -466,7 +513,7 @@ main {
   background: #111;
   color: #fff;
   border: 0;
-  border-radius: 3px;
+  border-radius: var(--radius);
   font-family: var(--font);
   font-size: 12px;
   font-weight: 500;

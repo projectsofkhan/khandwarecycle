@@ -8,135 +8,138 @@
   <meta name="theme-color" content="#ffffff" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://commons.wikimedia.org" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<header class="topbar" id="topbar">
+<header class="topbar">
   <div class="topbar-inner">
-    <a href="#overview" class="brand-text">Khandwa Recycles</a>
+    <a href="#" class="brand-text" onclick="goHome(event)">Khandwa Recycles</a>
     <nav class="topnav" aria-label="Sections">
-      <a href="#overview" class="topnav-link active" data-section="overview">Overview</a>
-      <a href="#areas" class="topnav-link" data-section="areas">Areas</a>
-      <a href="#map" class="topnav-link" data-section="map">Map</a>
-      <a href="#gallery" class="topnav-link" data-section="gallery">Gallery</a>
-      <a href="#about" class="topnav-link" data-section="about">About</a>
+      <a href="#overview" class="topnav-link" data-section="overview" onclick="goSection(event, 'overview')">Overview</a>
+      <a href="#areas" class="topnav-link" data-section="areas" onclick="goSection(event, 'areas')">Areas</a>
+      <a href="#map" class="topnav-link" data-section="map" onclick="goSection(event, 'map')">Map</a>
+      <a href="#gallery" class="topnav-link" data-section="gallery" onclick="goSection(event, 'gallery')">Gallery</a>
+      <a href="#about" class="topnav-link" data-section="about" onclick="goSection(event, 'about')">About</a>
     </nav>
   </div>
 </header>
 
 <main class="main">
 
-  <section class="hero" id="overview">
-    <div class="hero-bg-grid" aria-hidden="true"></div>
-    <div class="hero-inner">
-      <p class="eyebrow reveal">Independent civic data project</p>
-      <h1 class="hero-title reveal">Khandwa Recycles</h1>
-      <p class="hero-sub reveal">See what your area throws away — and how much of it actually gets recycled.</p>
-      <div class="hero-actions reveal">
-        <a href="#areas" class="btn btn-primary">Choose your area</a>
-        <a href="#map" class="btn btn-ghost">Open the map</a>
-      </div>
+  <!-- ===================== LANDING VIEW ===================== -->
+  <section id="view-landing" class="view view-landing">
 
-      <div class="score-card reveal">
-        <div class="score-left">
-          <span class="score-label">Swachh Survekshan 2024–25</span>
-          <span class="score-value">9,766<span class="score-unit">/ 12,500</span></span>
-          <span class="score-note">Official total score. National rank 55 of 824 cities.</span>
+    <section class="hero" id="overview">
+      <div class="hero-bg-grid" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <p class="eyebrow reveal">Independent civic data project</p>
+        <h1 class="hero-title reveal">Khandwa Recycles</h1>
+        <p class="hero-sub reveal">See what your area throws away — and how much of it actually gets recycled.</p>
+        <div class="hero-actions reveal">
+          <button class="btn btn-primary" type="button" onclick="goSection(event, 'areas')">Choose your area</button>
+          <button class="btn btn-ghost" type="button" onclick="goSection(event, 'map')">Open the map</button>
         </div>
-        <div class="score-divider"></div>
-        <div class="score-right">
-          <span class="score-label">Source segregation</span>
-          <span class="score-value score-value-sm">45<span class="score-unit">%</span></span>
-          <span class="score-note">Segregation parameter score. 55% of marks were cut in this category.</span>
+
+        <div class="score-card reveal">
+          <div class="score-left">
+            <span class="score-label">Swachh Survekshan 2024–25</span>
+            <span class="score-value">9,766<span class="score-unit">/ 12,500</span></span>
+            <span class="score-note">Official total score. National rank 55 of 824 cities.</span>
+          </div>
+          <div class="score-divider"></div>
+          <div class="score-right">
+            <span class="score-label">Source segregation</span>
+            <span class="score-value score-value-sm">45<span class="score-unit">%</span></span>
+            <span class="score-note">Segregation parameter score. 55% of marks were cut in this category.</span>
+          </div>
         </div>
+
+        <div class="city-strip reveal" id="city-strip"></div>
       </div>
+    </section>
 
-      <div class="city-strip reveal" id="city-strip"></div>
-    </div>
+    <section class="section" id="areas">
+      <div class="section-head reveal">
+        <span class="section-kicker">Eight areas · best to worst</span>
+        <h2>Choose your area</h2>
+        <p>Sorted by recycling access, highest first. Tap any card to open its profile, images, and five actions.</p>
+      </div>
+      <div class="area-grid" id="area-grid"></div>
+    </section>
+
+    <section class="section" id="map">
+      <div class="section-head reveal">
+        <span class="section-kicker">Geography</span>
+        <h2>The eight zones on the map</h2>
+        <p>Every area is labelled by name. Colour shows recycling access. Click any zone to open it.</p>
+      </div>
+      <div class="map-frame reveal">
+        <div id="map" role="application" aria-label="Interactive map of Khandwa zones"></div>
+      </div>
+      <div class="map-legend reveal">
+        <span class="legend-title">Recycling access</span>
+        <span class="legend-item"><span class="legend-swatch legend-low"></span>Low, below 20%</span>
+        <span class="legend-item"><span class="legend-swatch legend-mid"></span>Moderate, 20 to 30%</span>
+        <span class="legend-item"><span class="legend-swatch legend-high"></span>Higher, above 30%</span>
+      </div>
+      <p class="data-note reveal">Illustrative recycling access zones for demonstration — city-level figures are official.</p>
+    </section>
+
+    <section class="section" id="gallery">
+      <div class="section-head reveal">
+        <span class="section-kicker">Photographs</span>
+        <h2>Khandwa, in pictures</h2>
+        <p>Real photographs of Khandwa district. Tap any image to open it larger.</p>
+      </div>
+      <div class="gallery-grid" id="gallery-grid"></div>
+      <p class="gallery-note reveal">Photos from Wikimedia Commons under CC BY-SA. To add your own photos, upload to imgbb or Cloudinary, then add a new entry to <code>image_pool</code> in <code>data.json</code>.</p>
+    </section>
+
+    <section class="section" id="about">
+      <div class="section-head reveal">
+        <span class="section-kicker">About</span>
+        <h2>About this project</h2>
+      </div>
+      <div class="about-body reveal">
+        <p>Khandwa Recycles is an independent, citizen-led awareness project. It is <strong>not</strong> an official website of the Khandwa Municipal Corporation, the Government of Madhya Pradesh, or any government body, and it is <strong>not</strong> affiliated with or endorsed by them.</p>
+        <p>City-level figures are drawn from publicly available official sources, including the Swachh Survekshan 2024–25 results, municipal solid waste records, and CPCB publications.</p>
+        <p>Neighbourhood-level figures for the eight super-zones are <strong>illustrative estimates</strong> based on observed service patterns and local field notes. They are not official ward-level statistics and should not be treated as such.</p>
+        <p>This site is provided <strong>for information and awareness only</strong>. If you spot an error or have better local data, please reach out.</p>
+        <h3>Sources</h3>
+        <ul class="sources" id="sources-list"></ul>
+        <h3>Images</h3>
+        <p>All photographs are from Wikimedia Commons, published under CC BY-SA or compatible licences. They are representative images of Khandwa district.</p>
+      </div>
+    </section>
+
+    <footer class="foot reveal">
+      <span>Khandwa Recycles · Independent project · Not an official site</span>
+      <span>City figures official · Area figures estimates</span>
+    </footer>
+
   </section>
 
-  <section class="section" id="areas">
-    <div class="section-head reveal">
-      <span class="section-kicker">Eight areas · best to worst</span>
-      <h2>Choose your area</h2>
-      <p>Sorted by recycling access, highest first. Tap any card to open its profile, images, and five actions.</p>
-    </div>
-    <div class="area-grid" id="area-grid"></div>
+  <!-- ===================== DETAIL VIEW ===================== -->
+  <section id="view-detail" class="view view-detail" style="display: none;">
+    <button class="back-btn" type="button" onclick="closeDetail()">
+      <span class="back-arrow">←</span> Back to all areas
+    </button>
+    <article id="detail-content"></article>
   </section>
 
-  <section class="section" id="map">
-    <div class="section-head reveal">
-      <span class="section-kicker">Geography</span>
-      <h2>The eight zones on the map</h2>
-      <p>Every area is labelled by name. Colour shows recycling access. Click any zone to open it.</p>
-    </div>
-    <div class="map-frame reveal">
-      <div id="map" role="application" aria-label="Interactive map of Khandwa zones"></div>
-    </div>
-    <div class="map-legend reveal">
-      <span class="legend-title">Recycling access</span>
-      <span class="legend-item"><span class="legend-swatch legend-low"></span>Low, below 20%</span>
-      <span class="legend-item"><span class="legend-swatch legend-mid"></span>Moderate, 20 to 30%</span>
-      <span class="legend-item"><span class="legend-swatch legend-high"></span>Higher, above 30%</span>
-    </div>
-    <p class="data-note reveal">Illustrative recycling access zones for demonstration — city-level figures are official.</p>
-  </section>
-
-  <section class="section" id="gallery">
-    <div class="section-head reveal">
-      <span class="section-kicker">Photographs</span>
-      <h2>Khandwa, in pictures</h2>
-      <p>Real photographs of Khandwa district. Tap any image to open it larger.</p>
-    </div>
-    <div class="gallery-grid" id="gallery-grid"></div>
-    <p class="gallery-note reveal">Photos from Wikimedia Commons under CC BY-SA. To add your own photos, upload to imgbb or Cloudinary, then add a new entry to <code>image_pool</code> in <code>data.json</code>.</p>
-  </section>
-
-  <section class="section" id="about">
-    <div class="section-head reveal">
-      <span class="section-kicker">About</span>
-      <h2>About this project</h2>
-    </div>
-    <div class="about-body reveal">
-      <p>Khandwa Recycles is an independent, citizen-led awareness project. It is <strong>not</strong> an official website of the Khandwa Municipal Corporation, the Government of Madhya Pradesh, or any government body, and it is <strong>not</strong> affiliated with or endorsed by them.</p>
-      <p>City-level figures are drawn from publicly available official sources, including the Swachh Survekshan 2024–25 results, municipal solid waste records, and CPCB publications.</p>
-      <p>Neighbourhood-level figures for the eight super-zones are <strong>illustrative estimates</strong> based on observed service patterns and local field notes. They are not official ward-level statistics and should not be treated as such.</p>
-      <p>This site is provided <strong>for information and awareness only</strong>. If you spot an error or have better local data, please reach out — the map improves when residents correct it.</p>
-      <h3>Sources</h3>
-      <ul class="sources" id="sources-list"></ul>
-      <h3>Images</h3>
-      <p>All photographs are from Wikimedia Commons, published under CC BY-SA or compatible licences. They are representative images of Khandwa district, not photographs of the specific zones.</p>
-    </div>
-  </section>
-
-  <footer class="foot reveal">
-    <span>Khandwa Recycles · Independent project · Not an official site</span>
-    <span>City figures official · Area figures estimates</span>
-  </footer>
 </main>
 
-<!-- OVERLAY uses inline display:none — cannot be broken by cached CSS -->
-<div class="overlay" id="overlay" style="display: none;">
-  <div class="overlay-backdrop" id="overlay-backdrop"></div>
-  <div class="overlay-panel" role="dialog" aria-modal="true" aria-labelledby="overlay-title">
-    <button class="overlay-close" id="overlay-close" aria-label="Close" type="button">×</button>
-    <div class="overlay-content" id="overlay-content"></div>
-  </div>
+<!-- LIGHTBOX — display toggled via inline style in JS -->
+<div class="lightbox" id="lightbox" style="display: none;" onclick="closeLightbox()">
+  <img class="lightbox-img" id="lightbox-img" alt="" onclick="event.stopPropagation()" />
+  <button class="lightbox-close" type="button" onclick="closeLightbox()">×</button>
 </div>
 
-<div class="lightbox" id="lightbox" style="display: none;">
-  <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
-  <figure class="lightbox-figure">
-    <img id="lightbox-img" src="" alt="" />
-    <figcaption id="lightbox-caption"></figcaption>
-  </figure>
-  <button class="lightbox-close" id="lightbox-close" aria-label="Close image" type="button">×</button>
-</div>
-
-<button class="back-to-top" id="back-to-top" aria-label="Back to top" type="button">
+<button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top" onclick="scrollToTop()">
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
     <path d="M8 13V3M8 3L3 8M8 3L13 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
